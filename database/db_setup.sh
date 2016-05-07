@@ -12,7 +12,7 @@ fi
 if [ -f setup.sql ]
 then
     echo 'creating budget.db using file setup.sql'
-    cat setup.sql | sqlite3 ${db_name}.db
+    cat db_setup.sql | sqlite3 ${db_name}.db
 else
     echo please create a setup.sql file and then try again!
 fi
