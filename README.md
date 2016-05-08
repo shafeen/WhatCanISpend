@@ -10,10 +10,13 @@ The budget application we were all looking for!!!!
 
 
 **RESTful API**
-- [ ] Creating a budget: *POST* **/budget/create**
+- [ ] Creating a budget:
+    - ***POST*** ```/budget/create/```
     - params: {name: *str*, amount: *int*}
-- [ ] List all budgets: *GET* **/budget/all/**
-- [ ] Add an item to the budget: *POST* **/budget/additem/**
+- [ ] List all budgets:
+    - ***GET*** ```/budget/all/```
+- [ ] Add an item to the budget:
+    - ***POST*** ```/budget/additem/```
     - params: {budgetId: *int*, itemName: *str*, itemCost: *int*, endDate: *datetime str*}
-- [ ] Get all items in a budget: *GET* **/budget/:id/getitems/**
-
+- [ ] Get all items in a budget:
+    - ***GET*** ```/budget/:id/getitems/```
