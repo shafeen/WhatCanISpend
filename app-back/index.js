@@ -1,4 +1,5 @@
 var util = require('./util');
+var dbUtil = require('./dbUtil');
 var express = require('express');
 var app = express();
 
@@ -25,7 +26,27 @@ app.get('/test/', function (req, res) {
 });
 
 
-// THE MAIN ROUTES FOR THE APP
+// THE MAIN ROUTES FOR THE API
+app.post('/budget/create/', function (req, res) {
+    // TODO: complete this to create one new budget
+    var budgetName = req.body.name;
+    var budgetAmt = !isNaN(req.body.amount)? parseInt(req.body.amount) : null;
+    if (budgetName != undefined && budgetAmt != null && budgetAmt > 0) {
+        // TODO: complete writing function dbUtil.createBudget(..)
+        var budgetId = dbUtil.createBudget(budgetName, budgetAmt);
+        res.status(201).json({
+            message: 'Created budget { name:'+budgetName+', amount:'+budgetAmt+' }',
+            budget: {
+                id: budgetId
+            }
+        });
+    } else {
+        res.status(400).json({
+            message: 'Check parameters and try again.'
+        });
+    }
+});
+
 app.get('/budget/all/', function(req, res) {
     // TODO: complete this to return info about all available budgets
     res.json([
@@ -33,18 +54,6 @@ app.get('/budget/all/', function(req, res) {
         {message: 'Hello, Mars!'},
         {message: 'Hello, Venus!'}
     ]);
-});
-
-app.post('/budget/create/', function (req, res) {
-    // TODO: complete this to create one budget
-    var budgetName = req.body.name;
-    var budgetAmt = parseInt(req.body.amount);
-    if (budgetName != undefined && !Number.isNaN(budgetAmt) && budgetAmt > 0) {
-        res.status(200).send(
-            'Creating budget with\nname: ' + budgetName +
-            '\namount: ' + budgetAmt
-        );
-    }
 });
 
 
