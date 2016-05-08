@@ -19,12 +19,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wrashmi/Test.git"
+    "url": "git+https://github.com/shafeen/WhatCanISpend.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/wrashmi/Test/issues"
+    "url": "https://github.com/shafeen/WhatCanISpend/issues"
   },
-  "homepage": "https://github.com/wrashmi/Test#readme"
+  "homepage": "https://github.com/shafeen/WhatCanISpend#readme"
 }
