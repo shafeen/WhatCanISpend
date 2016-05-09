@@ -10,7 +10,7 @@ The budget application we were all looking for!!!!
 
 
 **RESTful API**
-- [ ] Creating a budget:
+- [X] Creating a budget:
     - ***POST*** ```/budget/create/```
     - params: {name: *str*, amount: *int*}
 - [ ] List all budgets:

@@ -31,14 +31,11 @@ app.post('/budget/create/', function (req, res) {
     // TODO: complete this to create one new budget
     var budgetName = req.body.name;
     var budgetAmt = !isNaN(req.body.amount)? parseInt(req.body.amount) : null;
+    var budgetType = req.body.type ? req.body.type : 'weekly';
     if (budgetName != undefined && budgetAmt != null && budgetAmt > 0) {
-        // TODO: complete writing function dbUtil.createBudget(..)
-        var budgetId = dbUtil.createBudget(budgetName, budgetAmt);
+        dbUtil.createBudget(budgetName, budgetAmt, budgetType);
         res.status(201).json({
-            message: 'Created budget { name:'+budgetName+', amount:'+budgetAmt+' }',
-            budget: {
-                id: budgetId
-            }
+            message: 'Created budget { name:'+budgetName+', amount:'+budgetAmt+' }'
         });
     } else {
         res.status(400).json({
