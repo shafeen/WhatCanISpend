@@ -13,7 +13,7 @@ The budget application we were all looking for!!!!
 - [X] Creating a budget:
     - ***POST*** ```/budget/create/```
     - params: {name: *str*, amount: *int*}
-- [ ] List all budgets:
+- [X] List all budgets:
     - ***GET*** ```/budget/all/```
 - [ ] Add an item to the budget:
     - ***POST*** ```/budget/additem/```

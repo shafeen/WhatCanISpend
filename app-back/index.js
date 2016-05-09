@@ -28,7 +28,7 @@ app.get('/test/', function (req, res) {
 
 // THE MAIN ROUTES FOR THE API
 app.post('/budget/create/', function (req, res) {
-    // TODO: complete this to create one new budget
+    // TODO: use promises
     var budgetName = req.body.name;
     var budgetAmt = !isNaN(req.body.amount)? parseInt(req.body.amount) : null;
     var budgetType = req.body.type ? req.body.type : 'weekly';
@@ -45,12 +45,8 @@ app.post('/budget/create/', function (req, res) {
 });
 
 app.get('/budget/all/', function(req, res) {
-    // TODO: complete this to return info about all available budgets
-    res.json([
-        {message: 'Hello, Earth!'},
-        {message: 'Hello, Mars!'},
-        {message: 'Hello, Venus!'}
-    ]);
+    // TODO: use promises
+    var budgets = dbUtil.getAllBudgets(req, res);
 });
 
 

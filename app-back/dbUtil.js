@@ -15,10 +15,33 @@ function createBudget(name, amount, type) {
         });
     });
     budgetDb.close();
-    // TODO: return something better since we can't return the lastId
-    return null;
+}
+
+function getAllBudgets(req, res) {
+    var sqlite3 = require('sqlite3').verbose();
+    var path = require('path');
+    var returnObj = [];
+    var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+    budgetDb.serialize(function () {
+        budgetDb.each("select budgets.id, budgets.name, budget_types.name type, amount " +
+            "from budgets JOIN budget_types on budget_types.id=budgets.type_id",
+            function(err, row) {
+                returnObj.push({
+                    id: row.id,
+                    name: row.name,
+                    amount: row.amount,
+                    type: row.type
+                });
+            },
+            function () {
+                res.json(returnObj);
+            }
+        );
+    });
+    budgetDb.close();
 }
 
 module.exports = {
-    createBudget: createBudget
+    createBudget: createBudget,
+    getAllBudgets: getAllBudgets
 };
