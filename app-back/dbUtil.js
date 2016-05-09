@@ -41,6 +41,17 @@ function getAllBudgets(req, res) {
     budgetDb.close();
 }
 
+//params: {budgetId: *int*, itemName: *str*, itemCost: *int*, endDate: *datetime str*}
+function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
+    //TODO: calculate duration based off the startdate and enddate
+
+    var sqlite3 = require('sqlite3').verbose();
+    var path = require('path');
+    var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+    // TODO: add item logic goes here ...
+    budgetDb.close();
+}
+
 module.exports = {
     createBudget: createBudget,
     getAllBudgets: getAllBudgets
