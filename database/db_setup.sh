@@ -9,10 +9,10 @@ then
 else
     echo 'no existing databases.'
 fi
-if [ -f setup.sql ]
+if [ -f db_setup.sql ]
 then
-    echo 'creating budget.db using file setup.sql'
+    echo 'creating budget.db using file db_setup.sql'
     cat db_setup.sql | sqlite3 ${db_name}.db
 else
-    echo please create a setup.sql file and then try again!
+    echo please create a db_setup.sql file and then try again!
 fi
