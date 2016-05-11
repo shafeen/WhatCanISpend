@@ -42,17 +42,24 @@ function getAllBudgets(req, res) {
 }
 
 //params: {budgetId: *int*, itemName: *str*, itemCost: *int*, endDate: *datetime str*}
+// endDate and startDate should be unix epoch timestamp in SECONDS (not milliseconds)
 function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
-    //TODO: calculate duration based off the startdate and enddate
-
-    var sqlite3 = require('sqlite3').verbose();
-    var path = require('path');
-    var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-    // TODO: add item logic goes here ...
-    budgetDb.close();
+    if (!isNaN(budgetId) || itemName=='' ||
+        !isNaN(itemCost) || !isNaN(endDate) ||
+        !isNaN(startDate) || (startDate > endDate)) {
+        return false;
+    } else {
+        var sqlite3 = require('sqlite3').verbose();
+        var path = require('path');
+        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+        // TODO: add item logic goes here ...
+        budgetDb.close();
+        return true;
+    }
 }
 
 module.exports = {
     createBudget: createBudget,
-    getAllBudgets: getAllBudgets
+    getAllBudgets: getAllBudgets,
+    budgetAddItem: budgetAddItem
 };
