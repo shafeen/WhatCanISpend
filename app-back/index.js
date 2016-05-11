@@ -44,11 +44,29 @@ app.post('/budget/create/', function (req, res) {
     }
 });
 
-app.get('/budget/all/', function(req, res) {
+app.get('/budget/all/', function (req, res) {
     // TODO: use promises
     var budgets = dbUtil.getAllBudgets(req, res);
 });
 
+app.post('/budget/additem/', function (req, res) {
+    var budgetId = req.body.budgetId;
+    var itemName = req.body.name;
+    var itemCost = req.body.cost;
+    var endDate = req.body.endDate;
+    var startDate = req.body.startDate;
+    // TODO: complete the dbUtil function and verify the parameters
+    if(dbUtil.budgetAddItem(budgetId, itemName, itemCost, endDate, startDate)){
+        res.status(201).json({
+            message: 'Added item { name:'+itemName+', itemCost:'+itemCost+' }'
+        });
+    } else {
+        res.status(400).json({
+            message: 'Check parameters and try again.'
+        });
+    }
+
+});
 
 // STATIC STUFF
 app.use('/lib/', express.static('../node_modules/bootstrap/dist/js/'));

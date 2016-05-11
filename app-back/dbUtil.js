@@ -60,5 +60,6 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
 
 module.exports = {
     createBudget: createBudget,
-    getAllBudgets: getAllBudgets
+    getAllBudgets: getAllBudgets,
+    budgetAddItem: budgetAddItem
 };
