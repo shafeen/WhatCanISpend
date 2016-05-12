@@ -10,6 +10,8 @@ function createBudget(name, amount, type) {
         budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type], function (err, row) {
             budgetTypeId = row? row.id : null;
             var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+            budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
+            // TODO: need to handle foreign key constraint errors
             budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount]);
             budgetDb2.close();
         });
@@ -63,6 +65,8 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
                 function (err, row) {
                     var budgetTypeId = row? row.id : null;
                     var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+                    budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
+                    // TODO: need to handle foreign key constraint errors
                     budgetDb2.run("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
                                   "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
                                   [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate]);
