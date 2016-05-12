@@ -42,11 +42,26 @@ app.post('/budget/create/', function (req, res) {
     var budgetAmt = !isNaN(req.body.amount)? parseInt(req.body.amount) : null;
     var budgetType = req.body.type ? req.body.type : 'weekly';
     if (budgetName != undefined && budgetAmt != null && budgetAmt > 0) {
-        dbUtil.createBudget(budgetName, budgetAmt, budgetType);
+        dbUtil.createBudget(budgetName, budgetAmt, budgetType,
+            function (budgetObj) {
+                res.status(201).json({
+                    message: 'Successfully created budget: ' + budgetObj.name,
+                    budget: budgetObj
+                });
+            },
+            function (failReasonsObj) {
+                res.status(400).json({
+                    message: 'Check parameters and try again.',
+                    reasons: failReasonsObj
+                });
+            }
+        );
+        // TODO: remove this when createBudget starts using the passed in callbacks
         res.status(201).json({
             message: 'Created budget { name:'+budgetName+', amount:'+budgetAmt+' }'
         });
     } else {
+        // TODO: remove this when createBudget starts using the passed in callbacks
         res.status(400).json({
             message: 'Check parameters and try again.'
         });

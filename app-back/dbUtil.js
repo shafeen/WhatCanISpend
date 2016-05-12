@@ -1,4 +1,5 @@
-function createBudget(name, amount, type) {
+function createBudget(name, amount, type, success, failure) {
+    // TODO: use the passed in callbacks for success and failure
     var sqlite3 = require('sqlite3').verbose();
     var path = require('path');
 
@@ -10,7 +11,7 @@ function createBudget(name, amount, type) {
         budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type], function (err, row) {
             budgetTypeId = row? row.id : null;
             var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-            budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
+            budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
             // TODO: need to handle foreign key constraint errors
             budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount]);
             budgetDb2.close();
