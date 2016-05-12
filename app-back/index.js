@@ -86,7 +86,7 @@ app.use('/lib/', express.static('../node_modules/jquery/dist/'));
 app.use('/images/', express.static('../app-front/images/'));
 
 app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+    console.log('WhatCanISpend app listening on port 3000!');
 });
 
 
