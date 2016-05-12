@@ -3,6 +3,10 @@ var dbUtil = require('./dbUtil');
 var express = require('express');
 var app = express();
 
+// compress all requests being served
+var compression = require('compression');
+app.use(compression());
+
 // using bodyparser for POST body parsing
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());

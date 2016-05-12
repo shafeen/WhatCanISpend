@@ -1,7 +1,7 @@
 {
-  "name": "test",
+  "name": "WhatCanISpend",
   "version": "0.0.0",
-  "description": "test repo",
+  "description": "The budget application we've all been looking for!!",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -9,6 +9,7 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "bootstrap": "^3.3.6",
+    "compression": "^1.6.1",
     "express": "^4.13.4",
     "jquery": "^2.2.3",
     "nodemon": "^1.9.2",
