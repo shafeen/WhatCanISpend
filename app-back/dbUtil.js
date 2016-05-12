@@ -44,18 +44,55 @@ function getAllBudgets(req, res) {
 //params: {budgetId: *int*, itemName: *str*, itemCost: *int*, endDate: *datetime str*}
 // endDate and startDate should be unix epoch timestamp in SECONDS (not milliseconds)
 function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
-    if (!isNaN(budgetId) || itemName=='' ||
-        !isNaN(itemCost) || !isNaN(endDate) ||
-        !isNaN(startDate) || (startDate > endDate)) {
+    if (isNaN(budgetId) || itemName=='' ||
+        isNaN(itemCost) || isNaN(endDate) ||
+        isNaN(startDate) || (startDate > endDate)) {
         return false;
     } else {
+        // TODO: calculate the item's duration here ***
+
         var sqlite3 = require('sqlite3').verbose();
         var path = require('path');
         var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-        // TODO: add item logic goes here ...
+        budgetDb.serialize(function () {
+            budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
+            budgetDb.get(
+                "SELECT budget_types.id " +
+                "FROM budget_types JOIN budgets ON budget_types.id = budgets.type_id " +
+                "WHERE budgets.id = ?", [budgetId],
+                function (err, row) {
+                    var budgetTypeId = row? row.id : null;
+                    var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+                    budgetDb2.run("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
+                                  "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
+                                  [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate]);
+                    budgetDb2.close();
+                }
+            );
+        });
         budgetDb.close();
         return true;
     }
+}
+
+function getBudgetDuration(startDate, endDate, budgetTypeId) {
+    var WEEKLY = 1, MONTHLY = 2, YEARLY = 3;
+    var duration = 0;
+    var start = new Date(0), end = new Date(0);
+    start.setUTCSeconds(startDate);
+    end.setUTCSeconds(endDate);
+    if (budgetTypeId == WEEKLY) {
+        duration = parseInt((end - start) / (1000*60*60*24)/7) + 1;
+    } else if (budgetTypeId == MONTHLY) {
+        // TODO: not supported at the moment
+        duration = -1;
+    } else if (budgetTypeId == YEARLY) {
+        // TODO: not supported at the moment
+        duration = -1;
+    } else {
+        duration = -1;
+    }
+    return duration;
 }
 
 module.exports = {

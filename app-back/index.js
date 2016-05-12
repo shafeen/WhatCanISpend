@@ -27,8 +27,13 @@ app.get('/test/', function (req, res) {
 
 
 // THE MAIN ROUTES FOR THE API
+
+// [ params ]
+//  name (String),
+//  amount (Number),
+//  type (String)
 app.post('/budget/create/', function (req, res) {
-    // TODO: use promises
+    // TODO: use promises in dbUtil.createBudget
     var budgetName = req.body.name;
     var budgetAmt = !isNaN(req.body.amount)? parseInt(req.body.amount) : null;
     var budgetType = req.body.type ? req.body.type : 'weekly';
@@ -45,17 +50,23 @@ app.post('/budget/create/', function (req, res) {
 });
 
 app.get('/budget/all/', function (req, res) {
-    // TODO: use promises
+    // TODO: use promises in dbUtil.getAllBudgets
     var budgets = dbUtil.getAllBudgets(req, res);
 });
 
+// [ params ]
+//  budgetId (int),
+//  name (String),
+//  cost (Number),
+//  endDate (unix timestamp seconds),
+//  startDate (unix timestamp seconds)
 app.post('/budget/additem/', function (req, res) {
     var budgetId = req.body.budgetId;
     var itemName = req.body.name;
     var itemCost = req.body.cost;
     var endDate = req.body.endDate;
     var startDate = req.body.startDate;
-    // TODO: complete the dbUtil function and verify the parameters
+    // TODO: use promises in dbUtil.budgetAddItem
     if(dbUtil.budgetAddItem(budgetId, itemName, itemCost, endDate, startDate)){
         res.status(201).json({
             message: 'Added item { name:'+itemName+', itemCost:'+itemCost+' }'
