@@ -15,8 +15,8 @@ The budget application we were all looking for!!!!
     - params: {name: *String*, amount: *Number*, type: *String*}
 - [X] List all budgets:
     - ***GET*** ```/budget/all/```
-- [ ] Add an item to the budget:
+- [X] Add an item to the budget: ***(weekly amortized items only for now)***
     - ***POST*** ```/budget/additem/```
-    - params: {budgetId: *int*, itemName: *String*, itemCost: *Number*, endDate: *datetime str*}
+    - params: {budgetId: *int*, itemName: *String*, itemCost: *Number*, startDate: *datetime str*, endDate: *datetime str*}
 - [ ] Get all items in a budget:
     - ***GET*** ```/budget/:id/getitems/```
