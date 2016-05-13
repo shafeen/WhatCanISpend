@@ -1,5 +1,4 @@
 function createBudget(name, amount, type, success, failure) {
-    // TODO: use the passed in callbacks for success and failure
     var sqlite3 = require('sqlite3').verbose();
     var path = require('path');
 
@@ -67,8 +66,6 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
         isNaN(startDate) || (startDate > endDate)) {
         return false;
     } else {
-        // TODO: calculate the item's duration here ***
-
         var sqlite3 = require('sqlite3').verbose();
         var path = require('path');
         var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
