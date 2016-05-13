@@ -5,17 +5,32 @@ function createBudget(name, amount, type, success, failure) {
 
     //var budgetDb = new sqlite3.Database('../database/budget.db'); // <--- also works
     var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-    var budgetTypeId = null;
     budgetDb.serialize(function() {
-        budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
-        budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type], function (err, row) {
-            budgetTypeId = row? row.id : null;
-            var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-            budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
-            // TODO: need to handle foreign key constraint errors
-            budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount]);
-            budgetDb2.close();
-        });
+        budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type],
+            function (err, row) {
+                if(!row) {
+                    failure({type: 'invalid budget type: ' + type});
+                    return;
+                }
+                var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+                budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
+                budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [row.id, name, amount],
+                    function (err) {
+                        if(!err) {
+                            success({
+                                id: this.lastID,
+                                name: name,
+                                type: type,
+                                amount: amount
+                            });
+                        } else {
+                            failure({});
+                        }
+                    }
+                );
+                budgetDb2.close();
+            }
+        );
     });
     budgetDb.close();
 }

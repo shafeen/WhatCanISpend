@@ -39,7 +39,7 @@ app.get('/test/', function (req, res) {
 app.post('/budget/create/', function (req, res) {
     // TODO: use promises in dbUtil.createBudget
     var budgetName = req.body.name;
-    var budgetAmt = !isNaN(req.body.amount)? parseInt(req.body.amount) : null;
+    var budgetAmt = !isNaN(req.body.amount)? Number(req.body.amount) : null;
     var budgetType = req.body.type ? req.body.type : 'weekly';
     if (budgetName != undefined && budgetAmt != null && budgetAmt > 0) {
         dbUtil.createBudget(budgetName, budgetAmt, budgetType,
@@ -56,15 +56,6 @@ app.post('/budget/create/', function (req, res) {
                 });
             }
         );
-        // TODO: remove this when createBudget starts using the passed in callbacks
-        res.status(201).json({
-            message: 'Created budget { name:'+budgetName+', amount:'+budgetAmt+' }'
-        });
-    } else {
-        // TODO: remove this when createBudget starts using the passed in callbacks
-        res.status(400).json({
-            message: 'Check parameters and try again.'
-        });
     }
 });
 
