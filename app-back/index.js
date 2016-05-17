@@ -72,8 +72,14 @@ app.post('/budget/create/', function (req, res) {
 });
 
 app.get('/budget/all/', function (req, res) {
-    // TODO: use promises in dbUtil.getAllBudgets
-    var budgets = dbUtil.getAllBudgets(req, res);
+    dbUtil.getAllBudgets()
+    .then(function (budgetsArray) {
+        res.json(budgetsArray);
+    }).catch(function () {
+        res.status(500).json({
+            message: 'Server error.'
+        });
+    });
 });
 
 // [ params ]
