@@ -1,37 +1,39 @@
-function createBudget(name, amount, type, success, failure) {
-    var sqlite3 = require('sqlite3').verbose();
-    var path = require('path');
+var Promise = require('bluebird');
 
-    //var budgetDb = new sqlite3.Database('../database/budget.db'); // <--- also works
-    var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-    budgetDb.serialize(function() {
-        budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type],
-            function (err, row) {
-                if(!row) {
-                    failure({type: 'invalid budget type: ' + type});
-                    return;
-                }
-                var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-                budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
-                budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [row.id, name, amount],
-                    function (err) {
-                        if(!err) {
-                            success({
-                                id: this.lastID,
-                                name: name,
-                                type: type,
-                                amount: amount
-                            });
-                        } else {
-                            failure({});
-                        }
+function createBudget(name, amount, type) {
+    return new Promise(function (resolve, reject) {
+        var sqlite3 = require('sqlite3').verbose();
+        var path = require('path');
+        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+        budgetDb.serialize(function() {
+            budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type],
+                function (err, row) {
+                    if(!row) {
+                        reject({type: 'invalid budget type: ' + type});
+                        return;
                     }
-                );
-                budgetDb2.close();
-            }
-        );
+                    var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+                    budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
+                    budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [row.id, name, amount],
+                        function (err) {
+                            if(!err) {
+                                resolve({
+                                    id: this.lastID,
+                                    name: name,
+                                    type: type,
+                                    amount: amount
+                                });
+                            } else {
+                                reject({});
+                            }
+                        }
+                    );
+                    budgetDb2.close();
+                }
+            );
+        });
+        budgetDb.close();
     });
-    budgetDb.close();
 }
 
 function getAllBudgets(req, res) {

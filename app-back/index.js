@@ -37,25 +37,37 @@ app.get('/test/', function (req, res) {
 //  amount (Number),
 //  type (String)
 app.post('/budget/create/', function (req, res) {
-    // TODO: use promises in dbUtil.createBudget
     var budgetName = req.body.name;
     var budgetAmt = !isNaN(req.body.amount)? Number(req.body.amount) : null;
     var budgetType = req.body.type ? req.body.type : 'weekly';
     if (budgetName != undefined && budgetAmt != null && budgetAmt > 0) {
-        dbUtil.createBudget(budgetName, budgetAmt, budgetType,
-            function (budgetObj) {
-                res.status(201).json({
-                    message: 'Successfully created budget: ' + budgetObj.name,
-                    budget: budgetObj
-                });
-            },
-            function (failReasonsObj) {
+        dbUtil.createBudget(budgetName, budgetAmt, budgetType)
+        .then(function (budgetObj) {
+            res.status(201).json({
+                message: 'Successfully created budget: ' + budgetObj.name,
+                budget: budgetObj
+            });
+        }).catch(function (failReasonsObj) {
+            if (failReasonsObj.type) {
                 res.status(400).json({
                     message: 'Check parameters and try again.',
                     reasons: failReasonsObj
                 });
+            } else {
+                res.status(500).json({
+                    message: 'Server Error.',
+                    reasons: failReasonsObj
+                });
             }
-        );
+        });
+    } else {
+        res.status(400).json({
+            message: 'Check parameters and try again.',
+            reasons: {
+                name: (budgetName==undefined? 'in':'')+'valid name',
+                amount: ((budgetAmt==null || budgetAmt <=0)? 'in':'')+'valid amount'
+            }
+        });
     }
 });
 
