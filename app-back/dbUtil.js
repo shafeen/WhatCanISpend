@@ -1,5 +1,7 @@
 var Promise = require('bluebird');
 
+// TODO: solve the triangle-of-doom problem in the functions below
+
 function createBudget(name, amount, type) {
     return new Promise(function (resolve, reject) {
         var sqlite3 = require('sqlite3').verbose();
@@ -69,35 +71,58 @@ function getAllBudgets() {
 //params: {budgetId: *int*, itemName: *str*, itemCost: *int*, endDate: *datetime str*}
 // endDate and startDate should be unix epoch timestamp in SECONDS (not milliseconds)
 function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
-    if (isNaN(budgetId) || itemName=='' ||
-        isNaN(itemCost) || isNaN(endDate) ||
-        isNaN(startDate) || (startDate > endDate)) {
-        return false;
-    } else {
-        var sqlite3 = require('sqlite3').verbose();
-        var path = require('path');
-        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-        budgetDb.serialize(function () {
-            budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
-            budgetDb.get(
-                "SELECT budget_types.id " +
-                "FROM budget_types JOIN budgets ON budget_types.id = budgets.type_id " +
-                "WHERE budgets.id = ?", [budgetId],
-                function (err, row) {
-                    var budgetTypeId = row? row.id : null;
-                    var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-                    budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
-                    // TODO: need to handle foreign key constraint errors
-                    budgetDb2.run("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
-                                  "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
-                                  [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate]);
-                    budgetDb2.close();
-                }
-            );
-        });
-        budgetDb.close();
-        return true;
-    }
+    return new Promise(function (resolve, reject) {
+        if (isNaN(budgetId) || itemName=='' ||
+            isNaN(itemCost) || isNaN(endDate) ||
+            isNaN(startDate) || (startDate > endDate)) {
+            reject({
+                budgetId: (isNaN(budgetId)? 'in':'')+'valid',
+                name: (itemName==''? 'in':'')+'valid',
+                cost: (isNaN(itemCost)? 'in':'')+'valid',
+                endDate: (isNaN(endDate)? 'in':'')+'valid',
+                startDate: (isNaN(startDate)? 'in':'')+'valid',
+                other: (startDate > endDate)? 'startDate must be before endDate':'n/a',
+                serverError: false
+            });
+        } else {
+            var sqlite3 = require('sqlite3').verbose();
+            var path = require('path');
+            var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+            budgetDb.serialize(function () {
+                budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
+                budgetDb.get(
+                    "SELECT budget_types.id " +
+                    "FROM budget_types JOIN budgets ON budget_types.id = budgets.type_id " +
+                    "WHERE budgets.id = ?", [budgetId],
+                    function (err, row) {
+                        if (err) {
+                            reject({serverError: true});
+                        } else {
+                            var budgetTypeId = row.id;
+                            var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+                            budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
+                            // TODO: need to handle foreign key constraint errors
+                            budgetDb2.run("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
+                                          "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
+                                          [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate], function(err) {
+                                    if (err) {
+                                        reject({serverError: true});
+                                    } else {
+                                        resolve({
+                                            id: this.lastID,
+                                            name: itemName,
+                                            cost: itemCost
+                                        });
+                                    }
+                            });
+                            budgetDb2.close();
+                        }
+                    }
+                );
+            });
+            budgetDb.close();
+        }
+    });
 }
 
 function getBudgetDuration(startDate, endDate, budgetTypeId) {

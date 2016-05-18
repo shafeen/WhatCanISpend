@@ -94,16 +94,19 @@ app.post('/budget/additem/', function (req, res) {
     var itemCost = req.body.cost;
     var endDate = req.body.endDate;
     var startDate = req.body.startDate;
-    // TODO: use promises in dbUtil.budgetAddItem
-    if(dbUtil.budgetAddItem(budgetId, itemName, itemCost, endDate, startDate)){
+    dbUtil.budgetAddItem(budgetId, itemName, itemCost, endDate, startDate)
+    .then(function (itemObj) {
         res.status(201).json({
-            message: 'Added item { name:'+itemName+', itemCost:'+itemCost+' }'
+            message: 'Added item',
+            item: itemObj
         });
-    } else {
-        res.status(400).json({
-            message: 'Check parameters and try again.'
+    }).catch(function (failReasonsObj) {
+        var failStatus = (failReasonsObj.serverError)? 500 : 400;
+        res.status(failStatus).json({
+            message: failStatus==500? 'Server Error' : 'Check params and try again',
+            reason: failReasonsObj
         });
-    }
+    });
 
 });
 
