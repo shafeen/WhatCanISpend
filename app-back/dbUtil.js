@@ -145,8 +145,17 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
     return duration;
 }
 
+function getBudgetInfo(budgetId) {
+    console.log("called this");
+    return new Promise(function (resolve, reject) {
+        // TODO: complete this function
+    });
+}
+
+
 module.exports = {
     createBudget: createBudget,
     getAllBudgets: getAllBudgets,
-    budgetAddItem: budgetAddItem
+    budgetAddItem: budgetAddItem,
+    getBudgetInfo: null // TODO: change this to the correct function
 };

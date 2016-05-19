@@ -110,6 +110,35 @@ app.post('/budget/additem/', function (req, res) {
 
 });
 
+app.get('/budget/:id/info', function (req, res) {
+    if(!isNaN(req.params.id)) {
+        var budgetId = Number(req.params.id);
+        // TODO: complete this (and then remove the if statement)
+        if (dbUtil.getBudgetInfo) {
+            dbUtil.getBudgetInfo(budgetId)
+            .then(function (budgetInfoObj) {
+                res.json(budgetInfoObj);
+            }).catch(function (failReasonsObj){
+                res.status(500).json({
+                    message: 'Server Error',
+                    reason: failReasonsObj
+                });
+            });
+        } else {
+            res.status(500).json({
+                message: 'api route not implemented yet, try again later'
+            });
+        }
+    } else {
+        res.status(400).json({
+            message: 'check params and try again',
+            reason: {
+                id: 'invalid'
+            }
+        });
+    }
+});
+
 // STATIC STUFF
 app.use('/lib/', express.static('../node_modules/bootstrap/dist/js/'));
 app.use('/lib/', express.static('../node_modules/bootstrap/dist/css/'));
