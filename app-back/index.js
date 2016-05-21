@@ -37,6 +37,7 @@ app.get('/test/', function (req, res) {
 //  amount (Number),
 //  type (String)
 app.post('/budget/create/', function (req, res) {
+    console.log('received api request: /budget/create/');
     var budgetName = req.body.name;
     var budgetAmt = !isNaN(req.body.amount)? Number(req.body.amount) : null;
     var budgetType = req.body.type ? req.body.type : 'weekly';
@@ -72,6 +73,7 @@ app.post('/budget/create/', function (req, res) {
 });
 
 app.get('/budget/all/', function (req, res) {
+    console.log('received api request: /budget/all/');
     dbUtil.getAllBudgets()
     .then(function (budgetsArray) {
         res.json(budgetsArray);
@@ -89,6 +91,7 @@ app.get('/budget/all/', function (req, res) {
 //  endDate (unix timestamp seconds),
 //  startDate (unix timestamp seconds)
 app.post('/budget/additem/', function (req, res) {
+    console.log('received api request: /budget/additem/');
     var budgetId = req.body.budgetId;
     var itemName = req.body.name;
     var itemCost = req.body.cost;
@@ -110,7 +113,8 @@ app.post('/budget/additem/', function (req, res) {
 
 });
 
-app.get('/budget/:id/info', function (req, res) {
+app.get('/budget/:id/info/', function (req, res) {
+    console.log('received api request: /budget/:id/info/');
     if(!isNaN(req.params.id)) {
         var budgetId = Number(req.params.id);
         // TODO: complete this (and then remove the if statement)
