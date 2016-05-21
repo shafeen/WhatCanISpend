@@ -40,31 +40,15 @@ function createBudget(name, amount, type) {
 
 function getAllBudgets() {
     return new Promise(function (resolve, reject) {
-        var sqlite3 = require('sqlite3').verbose();
-        var path = require('path');
-        var returnObj = [];
-        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-        budgetDb.serialize(function () {
-            budgetDb.each("SELECT budgets.id, budgets.name, budget_types.name type, amount " +
-                "FROM budgets JOIN budget_types on budget_types.id=budgets.type_id",
-                function(err, row) {
-                    if (err) {
-                        reject({});
-                    } else {
-                        returnObj.push({
-                            id: row.id,
-                            name: row.name,
-                            amount: row.amount,
-                            type: row.type
-                        });
-                    }
-                },
-                function () {
-                    resolve(returnObj);
-                }
-            );
+        getSelectQueryResults("SELECT budgets.id, budgets.name, " +
+            "amount, budget_types.name type " +
+            "FROM budgets " +
+            "JOIN budget_types on budget_types.id=budgets.type_id")
+        .then(function (budgetObjsArray) {
+            resolve(budgetObjsArray);
+        }).catch(function (errorObj) {
+            reject(errorObj);
         });
-        budgetDb.close();
     });
 }
 
@@ -149,6 +133,30 @@ function getBudgetInfo(budgetId) {
     console.log("called this");
     return new Promise(function (resolve, reject) {
         // TODO: complete this function
+    });
+}
+
+function getSelectQueryResults(query) {
+    return new Promise(function (resolve, reject) {
+        var sqlite3 = require('sqlite3').verbose();
+        var path = require('path');
+        var returnObj = [];
+        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+        budgetDb.serialize(function () {
+            budgetDb.each(query,
+                function(err, row) {
+                    if (err) {
+                        reject({});
+                    } else {
+                        returnObj.push(row);
+                    }
+                },
+                function () {
+                    resolve(returnObj);
+                }
+            );
+        });
+        budgetDb.close();
     });
 }
 
