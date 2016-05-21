@@ -4,37 +4,37 @@ var Promise = require('bluebird');
 
 function createBudget(name, amount, type) {
     return new Promise(function (resolve, reject) {
-        var sqlite3 = require('sqlite3').verbose();
-        var path = require('path');
-        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-        budgetDb.serialize(function() {
-            budgetDb.get("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type],
-                function (err, row) {
-                    if(!row) {
-                        reject({type: 'invalid budget type: ' + type});
-                        return;
-                    }
-                    var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-                    budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
-                    budgetDb2.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [row.id, name, amount],
-                        function (err) {
-                            if(!err) {
-                                resolve({
-                                    id: this.lastID,
-                                    name: name,
-                                    type: type,
-                                    amount: amount
-                                });
-                            } else {
-                                reject({});
-                            }
+        getSelectQueryResults("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type])
+        .then(function (resultArray) {
+            if (!resultArray.length) {
+                reject({type: 'invalid budget type: ' + type});
+                return;
+            }
+            var budgetTypeId = resultArray[0].id;
+            var sqlite3 = require('sqlite3').verbose();
+            var path = require('path');
+            var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+            budgetDb.serialize(function () {
+                budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
+                budgetDb.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount],
+                    function (err) {
+                        if(!err) {
+                            resolve({
+                                id: this.lastID,
+                                name: name,
+                                type: type,
+                                amount: amount
+                            });
+                        } else {
+                            reject({});
                         }
-                    );
-                    budgetDb2.close();
-                }
-            );
+                    }
+                );
+            });
+            budgetDb.close();
+        }).catch(function (errorObj) {
+            reject({});
         });
-        budgetDb.close();
     });
 }
 
@@ -140,7 +140,7 @@ function getBudgetInfo(budgetId) {
             "FROM budgets JOIN " +
             "items ON budgets.id = items.budget_id JOIN " +
             "budget_types ON budgets.type_id = budget_types.id " +
-            "WHERE budgets.id="+budgetId)
+            "WHERE budgets.id=?", [budgetId])
         .then(function (itemObjsArray) {
             var budgetInfoObj = {
                 budgetName: itemObjsArray[0].name,
@@ -158,14 +158,14 @@ function getBudgetInfo(budgetId) {
     });
 }
 
-function getSelectQueryResults(query) {
+function getSelectQueryResults(query, params) {
     return new Promise(function (resolve, reject) {
         var sqlite3 = require('sqlite3').verbose();
         var path = require('path');
         var returnObj = [];
         var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
         budgetDb.serialize(function () {
-            budgetDb.each(query,
+            budgetDb.each(query, params,
                 function(err, row) {
                     if (err) {
                         reject({});
