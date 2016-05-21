@@ -1,4 +1,6 @@
 var Promise = require('bluebird');
+var sqlite3 = require('sqlite3').verbose();
+var path = require('path');
 
 // TODO: solve the triangle-of-doom problem in the functions below
 
@@ -11,29 +13,19 @@ function createBudget(name, amount, type) {
                 return;
             }
             var budgetTypeId = resultArray[0].id;
-            var sqlite3 = require('sqlite3').verbose();
-            var path = require('path');
-            var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-            budgetDb.serialize(function () {
-                budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
-                budgetDb.run("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount],
-                    function (err) {
-                        if(!err) {
-                            resolve({
-                                id: this.lastID,
-                                name: name,
-                                type: type,
-                                amount: amount
-                            });
-                        } else {
-                            reject({});
-                        }
-                    }
-                );
+            runInsertQuery("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount])
+            .then(function (lastInsertedId) {
+                resolve({
+                    id: lastInsertedId,
+                    name: name,
+                    type: type,
+                    amount: amount
+                });
+            }).catch(function (errorObj) {
+                reject(errorObj);
             });
-            budgetDb.close();
         }).catch(function (errorObj) {
-            reject({});
+            reject(errorObj);
         });
     });
 }
@@ -69,8 +61,6 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
                 serverError: false
             });
         } else {
-            var sqlite3 = require('sqlite3').verbose();
-            var path = require('path');
             var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
             budgetDb.serialize(function () {
                 budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
@@ -160,8 +150,6 @@ function getBudgetInfo(budgetId) {
 
 function getSelectQueryResults(query, params) {
     return new Promise(function (resolve, reject) {
-        var sqlite3 = require('sqlite3').verbose();
-        var path = require('path');
         var returnObj = [];
         var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
         budgetDb.serialize(function () {
@@ -182,6 +170,22 @@ function getSelectQueryResults(query, params) {
     });
 }
 
+function runInsertQuery(query, params) {
+    return new Promise(function (resolve, reject) {
+        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+        budgetDb.serialize(function () {
+            budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
+            budgetDb.run(query, params, function (err) {
+                if(!err) {
+                    resolve(this.lastID);
+                } else {
+                    reject({});
+                }
+            });
+        });
+        budgetDb.close();
+    });
+}
 
 module.exports = {
     createBudget: createBudget,
