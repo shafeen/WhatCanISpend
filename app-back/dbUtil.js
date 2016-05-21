@@ -130,9 +130,31 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
 }
 
 function getBudgetInfo(budgetId) {
-    console.log("called this");
     return new Promise(function (resolve, reject) {
         // TODO: complete this function
+        getSelectQueryResults(
+            "SELECT budgets.name, items.id item_id, " +
+            "items.description, items.cost, " +
+            "items.duration, budget_types.name budget_type, " +
+            "DATE(items.start_date) start_date, DATE(items.end_date) end_date " +
+            "FROM budgets JOIN " +
+            "items ON budgets.id = items.budget_id JOIN " +
+            "budget_types ON budgets.type_id = budget_types.id " +
+            "WHERE budgets.id="+budgetId)
+        .then(function (itemObjsArray) {
+            var budgetInfoObj = {
+                budgetName: itemObjsArray[0].name,
+                budgetType: itemObjsArray[0].budget_type,
+                items: itemObjsArray
+            };
+            budgetInfoObj.items.forEach(function (item) {
+                delete item.name;
+                delete item.budget_type;
+            });
+            resolve(budgetInfoObj);
+        }).catch(function (errorObj) {
+            reject(errorObj);
+        });
     });
 }
 
@@ -165,5 +187,5 @@ module.exports = {
     createBudget: createBudget,
     getAllBudgets: getAllBudgets,
     budgetAddItem: budgetAddItem,
-    getBudgetInfo: null // TODO: change this to the correct function
+    getBudgetInfo: getBudgetInfo
 };

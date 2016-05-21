@@ -113,6 +113,8 @@ app.post('/budget/additem/', function (req, res) {
 
 });
 
+// [ params ]
+//  budgetId (int)
 app.get('/budget/:id/info/', function (req, res) {
     console.log('received api request: /budget/:id/info/');
     if(!isNaN(req.params.id)) {
