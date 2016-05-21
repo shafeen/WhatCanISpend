@@ -2,8 +2,6 @@ var Promise = require('bluebird');
 var sqlite3 = require('sqlite3').verbose();
 var path = require('path');
 
-// TODO: solve the triangle-of-doom problem in the functions below
-
 function createBudget(name, amount, type) {
     return new Promise(function (resolve, reject) {
         getSelectQueryResults("SELECT id from budget_types WHERE budget_types.name=? LIMIT 1", [type])
@@ -61,40 +59,27 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
                 serverError: false
             });
         } else {
-            var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-            budgetDb.serialize(function () {
-                budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
-                budgetDb.get(
-                    "SELECT budget_types.id " +
-                    "FROM budget_types JOIN budgets ON budget_types.id = budgets.type_id " +
-                    "WHERE budgets.id = ?", [budgetId],
-                    function (err, row) {
-                        if (err) {
-                            reject({serverError: true});
-                        } else {
-                            var budgetTypeId = row.id;
-                            var budgetDb2 = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
-                            budgetDb2.run("PRAGMA FOREIGN_KEYS = ON");
-                            // TODO: need to handle foreign key constraint errors
-                            budgetDb2.run("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
-                                          "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
-                                          [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate], function(err) {
-                                    if (err) {
-                                        reject({serverError: true});
-                                    } else {
-                                        resolve({
-                                            id: this.lastID,
-                                            name: itemName,
-                                            cost: itemCost
-                                        });
-                                    }
-                            });
-                            budgetDb2.close();
-                        }
-                    }
-                );
+            getSelectQueryResults("SELECT budget_types.id " +
+                "FROM budget_types JOIN budgets " +
+                "ON budget_types.id = budgets.type_id " +
+                "WHERE budgets.id = ?", [budgetId])
+            .then(function (resultArray) {
+                var budgetTypeId = resultArray[0].id;
+                runInsertQuery("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
+                    "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
+                    [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate])
+                .then(function (lastInsertedId) {
+                    resolve({
+                        id: lastInsertedId,
+                        name: itemName,
+                        cost: itemCost
+                    });
+                }).catch(function (errorObj) {
+                    reject({serverError: true});
+                });
+            }).catch(function (errorObj) {
+                reject({serverError: true});
             });
-            budgetDb.close();
         }
     });
 }
