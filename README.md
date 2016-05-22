@@ -20,3 +20,10 @@ The budget application we were all looking for!!!!
     - params: {budgetId: *int*, itemName: *String*, itemCost: *Number*, startDate: *datetime str*, endDate: *datetime str*}
 - [X] Get all information regarding a specific budget:
     - ***GET*** ```/budget/:id/info/```
+
+
+**Web Interface**
+- [ ] Create a budget.
+- [ ] List and view all budgets.
+- [ ] Add items to a specific budget.
+- [ ] View and edit items in and information about a specific budget.
