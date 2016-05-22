@@ -13,8 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function (req, res) {
-    res.redirect('/home');
-    //res.send(util.add('Hello again,', 'from the other siiiide!'));
+    res.sendFile('index.html', {root: '../app-front/'});
 });
 
 app.get('/createBudget/', function (req, res) {
@@ -150,6 +149,7 @@ app.use('/lib/', express.static('../node_modules/bootstrap/dist/js/'));
 app.use('/lib/', express.static('../node_modules/bootstrap/dist/css/'));
 app.use('/lib/', express.static('../node_modules/jquery/dist/'));
 app.use('/images/', express.static('../app-front/images/'));
+app.use('/scripts/', express.static('../app-front/scripts/'));
 
 app.listen(3000, function () {
     console.log('WhatCanISpend app listening on port 3000!');
