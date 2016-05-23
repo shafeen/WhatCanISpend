@@ -1,3 +1,3 @@
 $(document).ready(function () {
-    alert('Hello, World!');
+    $('#item-start-date, #item-end-date' ).datepicker();
 });

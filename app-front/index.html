@@ -4,9 +4,36 @@
     <meta charset="UTF-8">
     <title>Our test page</title>
     <script defer src="/lib/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
     <script defer src="/scripts/budget.js"></script>
+    <script defer src="/lib/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap-theme.min.css">
+
 </head>
 <body>
-    Hello and welcome to our site!!!
+    <div>
+        <button id="budget-create-btn" class="btn btn-default">Create budget</button>
+        <button id="budget-add-item-btn" class="btn btn-default">Add item to Budget</button>
+        <button id="budget-list-all" class="btn btn-default">List all budgets</button>
+        <button id="budget-edit" class="btn btn-default">Edit a budget</button>
+    </div>
+
+    <div id="form-create-budget">
+        <h4>Create new budget</h4>
+        <label>name <input id="budget-name" placeholder="enter name here" type="text"/></label><br/>
+        <label>type <select id="budget-type"><option value="1">weekly</option></select></label><br/>
+        <label>amount <input id="budget-amount" type="number" min="0"/></label><br/>
+    </div>
+    <div id="form-add-item">
+        <h4>Add new item</h4>
+        <label>name <input id="item-name" placeholder="enter name here" type="text"/></label><br/>
+        <label>amount <input id="item-amount" type="number" min="0"/></label><br/>
+        <label>start date <input id="item-start-date" type="text" /></label><br/>
+        <label>end date <input id="item-end-date" type="text"/></label><br/>
+    </div>
+
 </body>
 </html>
