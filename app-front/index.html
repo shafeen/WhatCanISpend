@@ -13,8 +13,16 @@
     <link rel="stylesheet" type="text/css" href="/lib/bootstrap-theme.min.css">
     <script defer src="/lib/handlebars.min.js"></script>
 
+    <script id="listItemTemplate" type="text/x-handlebars-template">
+        <div class="row" data-item-id="{{item_id}}">
+            <div class="col-md-4">{{description}}</div>
+            <div class="col-md-3">{{cost}}</div>
+            <div class="col-md-1">{{duration}} week(s)</div>
+            <div class="col-md-4">ends on {{end_date}}</div>
+        </div>
+    </script>
 </head>
-<body>
+<body class="container">
     <div>
         <button id="budget-create-btn" class="btn btn-default">Create budget</button>
         <button id="budget-add-item-btn" class="btn btn-default">Add item to Budget</button>
@@ -22,19 +30,22 @@
         <button id="budget-edit" class="btn btn-default">Edit a budget</button>
     </div>
 
-    <div id="form-create-budget">
+    <div id="form-create-budget" class="form-inline">
         <h4>Create new budget</h4>
-        <label>name <input id="budget-name" placeholder="enter name here" type="text"/></label><br/>
-        <label>type <select id="budget-type"><option value="1">weekly</option></select></label><br/>
-        <label>amount <input id="budget-amount" type="number" min="0"/></label><br/>
+        <label>name <input id="budget-name" class="form-control" placeholder="enter name here" type="text"/></label><br/>
+        <label>amortized <select id="budget-type" class="form-control"><option value="1">weekly</option></select></label><br/>
+        <label>amount <input id="budget-amount" class="form-control" placeholder="Enter amount $" type="number" min="0"/></label><br/>
     </div>
-    <div id="form-add-item">
+    <div id="form-add-item" class="form-inline">
         <h4>Add new item</h4>
-        <label>name <input id="item-name" placeholder="enter name here" type="text"/></label><br/>
-        <label>amount <input id="item-amount" type="number" min="0"/></label><br/>
-        <label>start date <input id="item-start-date" type="text" /></label><br/>
-        <label>end date <input id="item-end-date" type="text"/></label><br/>
+        <label>name <input id="item-name" class="form-control" placeholder="enter name here" type="text"/></label><br/>
+        <label>amount <input id="item-amount" type="number" class="form-control" min="0"/></label><br/>
+        <label>start date <input id="item-start-date" type="text" class="form-control" /></label><br/>
+        <label>end date <input id="item-end-date" type="text" class="form-control"/></label><br/>
     </div>
+
+    <button id="getItemList" class="btn btn-warning">Get items</button>
+    <div id="budgetItemList" class="container"></div>
 
 </body>
 </html>
