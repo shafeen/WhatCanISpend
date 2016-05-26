@@ -44,7 +44,11 @@
         <label>end date <input id="item-end-date" type="text" class="form-control"/></label><br/>
     </div>
 
-    <button id="getItemList" class="btn btn-warning">Get items</button>
+    <div id="budgetInfoContainer" class="form-inline">
+        <label>budgetId <input id="budget-id" type="number" class="form-control" value="1" min="0"/></label><br/>
+        <input type="button" id="getItemList" class="btn btn-warning form-control" value="Get Info"/>
+    </div>
+    <div id="budgetList" class="container"></div>
     <div id="budgetItemList" class="container"></div>
 
 </body>
