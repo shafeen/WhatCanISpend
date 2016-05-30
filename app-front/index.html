@@ -23,9 +23,11 @@
     </script>
 
     <script id="budgetListTemplate" type="text/x-handlebars-template">
-        {{#each budgetList}}
+        {{#each budgets}}
         <div class="row" data-budget-id="{{this.id}}">
-            {{name}} {{amount}} {{type}}
+            <div class="col-md-4">{{this.name}}</div>
+            <div class="col-md-4">{{this.amount}}</div>
+            <div class="col-md-4">{{this.type}}</div>
         </div>
         {{/each}}
     </script>

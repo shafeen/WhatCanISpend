@@ -1,8 +1,3 @@
-$(document).ready(function () {
-    budgetPageUtil.hideUnusedForms();
-    budgetPageUtil.initClickHandlers();
-});
-
 var budgetPageUtil = (function($) {
     function hideUnusedForms() {
         $('#form-create-budget, #form-add-item').hide();
@@ -23,9 +18,8 @@ var budgetPageUtil = (function($) {
             $.get(infoApiPath).done(function (budgetInfo) {
                 var $budgetItemList = $('#budgetItemList').empty();
                 $budgetItemList.append(budgetInfo.budgetName);
-                var listItemTemplate = Handlebars.compile($('#listItemTemplate').html());
                 budgetInfo.items.forEach(function (item) {
-                    var $item = $(listItemTemplate(item));
+                    var $item = $(_compiledTemplate('listItemTemplate')(item));
                     $budgetItemList.append($item);
                     $item.hide().fadeIn('slow');
                 });
@@ -37,14 +31,24 @@ var budgetPageUtil = (function($) {
         $('#budget-list-all').click(function (e) {
             $.get('/budget/all/').done(function (budgetList) {
                 var $budgetList = $('#budgetList').empty();
-                budgetList.forEach(function (budgetObj) {
-                    // TODO: update this to a better list (use a template)
-                    $budgetList.append(JSON.stringify(budgetObj)).append('<br/>');
-                });
+                var $budgets = $(_compiledTemplate('budgetListTemplate')({budgets: budgetList}));
+                $budgetList.append($budgets);
+                $budgets.hide().fadeIn('slow');
             }).fail(function () {
                 alert("Couldn't get budget list!");
             })
         });
+    }
+
+    var compiledTemplates = {};
+    function _compiledTemplate(templateId) {
+        if (!compiledTemplates[templateId]) {
+            var $templateHtml = $('#'+templateId).html();
+            if ($templateHtml) {
+                compiledTemplates[templateId] = Handlebars.compile($templateHtml);
+            }
+        }
+        return compiledTemplates[templateId];
     }
 
     return {
@@ -52,3 +56,8 @@ var budgetPageUtil = (function($) {
         initClickHandlers: initClickHandlers
     }
 })(jQuery);
+
+$(document).ready(function () {
+    budgetPageUtil.hideUnusedForms();
+    budgetPageUtil.initClickHandlers();
+});
