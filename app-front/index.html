@@ -21,6 +21,14 @@
             <div class="col-md-4">ends on {{end_date}}</div>
         </div>
     </script>
+
+    <script id="budgetListTemplate" type="text/x-handlebars-template">
+        {{#each budgetList}}
+        <div class="row" data-budget-id="{{this.id}}">
+            {{name}} {{amount}} {{type}}
+        </div>
+        {{/each}}
+    </script>
 </head>
 <body class="container">
     <div>
