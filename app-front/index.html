@@ -16,8 +16,8 @@
     <script id="listItemTemplate" type="text/x-handlebars-template">
         <div class="row" data-item-id="{{item_id}}">
             <div class="col-md-4">{{description}}</div>
-            <div class="col-md-3">{{cost}}</div>
-            <div class="col-md-1">{{duration}} week(s)</div>
+            <div class="col-md-2">{{cost}}</div>
+            <div class="col-md-2">{{duration}} week(s)</div>
             <div class="col-md-4">ends on {{end_date}}</div>
         </div>
     </script>
@@ -25,10 +25,14 @@
     <script id="budgetListTemplate" type="text/x-handlebars-template">
         {{#each budgets}}
         <div class="row" data-budget-id="{{this.id}}">
-            <div class="col-md-4">{{this.name}}</div>
-            <div class="col-md-4">{{this.amount}}</div>
-            <div class="col-md-4">{{this.type}}</div>
+            <div class="col-md-3">{{this.name}}</div>
+            <div class="col-md-3">{{this.amount}}</div>
+            <div class="col-md-3">{{this.type}}</div>
+            <input type="button" data-budget-id="{{this.id}}"
+                   class="btn btn-warning col-md-2 get-budget-info-btn"
+                   value="Get Info"/>
         </div>
+        <div class="row container budgetItemList" data-budget-id="{{this.id}}"></div>
         {{/each}}
     </script>
 </head>
@@ -54,12 +58,7 @@
         <label>end date <input id="item-end-date" type="text" class="form-control"/></label><br/>
     </div>
 
-    <div id="budgetInfoContainer" class="form-inline">
-        <label>budgetId <input id="budget-id" type="number" class="form-control" value="1" min="0"/></label><br/>
-        <input type="button" id="getItemList" class="btn btn-warning form-control" value="Get Info"/>
-    </div>
     <div id="budgetList" class="container"></div>
-    <div id="budgetItemList" class="container"></div>
 
 </body>
 </html>

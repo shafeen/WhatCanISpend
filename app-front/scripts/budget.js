@@ -1,23 +1,38 @@
 var budgetPageUtil = (function($) {
+
     function hideUnusedForms() {
         $('#form-create-budget, #form-add-item').hide();
     }
 
-    function initClickHandlers() {
-        $('#budget-create-btn').click(function (e) {
+    var _clickHandlers = {
+        budgetCreate: function budgetCreate (e) {
             $('#form-create-budget').fadeIn();
-        });
-
-        $('#budget-add-item-btn').click(function (e) {
+        },
+        budgetAddItem: function budgetAddItem (e) {
             $('#item-start-date, #item-end-date' ).datepicker();
             $('#form-add-item').fadeIn();
-        });
+        },
+        budgetListAll: function budgetListAll (e) {
+            $.get('/budget/all/').done(function (budgetList) {
+                var $budgetList = $('#budgetList').empty();
+                var $budgets = $(_compiledTemplate('budgetListTemplate')({budgets: budgetList}));
+                $budgetList.append($budgets);
+                $budgets.hide().fadeIn('slow');
+                // attach click handlers to each of the "Get Info" budgets
+                $('.get-budget-info-btn').each(function () {
+                    $(this).click(_clickHandlers.budgetGetInfo);
+                });
 
-        $('#getItemList').click(function (e) {
-            var infoApiPath = '/budget/'+$('#budget-id').val()+'/info/';
+            }).fail(function () {
+                alert("Couldn't get budget list!");
+            })
+        },
+        budgetGetInfo: function budgetGetInfo (e) {
+            var budgetId = $(this).attr('data-budget-id');
+            var infoApiPath = '/budget/'+budgetId+'/info/';
             $.get(infoApiPath).done(function (budgetInfo) {
-                var $budgetItemList = $('#budgetItemList').empty();
-                $budgetItemList.append(budgetInfo.budgetName);
+                var $budgetItemList = $('.budgetItemList').hide()
+                    .filter('[data-budget-id=' + budgetId + ']').empty().show();
                 budgetInfo.items.forEach(function (item) {
                     var $item = $(_compiledTemplate('listItemTemplate')(item));
                     $budgetItemList.append($item);
@@ -26,18 +41,13 @@ var budgetPageUtil = (function($) {
             }).fail(function () {
                 alert("Couldn't get budget info from: "+infoApiPath);
             });
-        });
+        }
+    };
 
-        $('#budget-list-all').click(function (e) {
-            $.get('/budget/all/').done(function (budgetList) {
-                var $budgetList = $('#budgetList').empty();
-                var $budgets = $(_compiledTemplate('budgetListTemplate')({budgets: budgetList}));
-                $budgetList.append($budgets);
-                $budgets.hide().fadeIn('slow');
-            }).fail(function () {
-                alert("Couldn't get budget list!");
-            })
-        });
+    function initClickHandlers() {
+        $('#budget-create-btn').click(_clickHandlers.budgetCreate);
+        $('#budget-add-item-btn').click(_clickHandlers.budgetAddItem);
+        $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
 
     var compiledTemplates = {};
