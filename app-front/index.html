@@ -14,12 +14,14 @@
     <script defer src="/lib/handlebars.min.js"></script>
 
     <script id="listItemTemplate" type="text/x-handlebars-template">
-        <div class="row" data-item-id="{{item_id}}">
-            <div class="col-md-4">{{description}}</div>
-            <div class="col-md-2">{{cost}}</div>
-            <div class="col-md-2">{{duration}} week(s)</div>
-            <div class="col-md-4">ends on {{end_date}}</div>
+        {{#each items}}
+        <div class="row" data-item-id="{{this.item_id}}">
+            <div class="col-md-4">{{this.description}}</div>
+            <div class="col-md-2">{{this.cost}}</div>
+            <div class="col-md-2">{{this.duration}} week(s)</div>
+            <div class="col-md-4">ends on {{this.end_date}}</div>
         </div>
+        {{/each}}
     </script>
 
     <script id="budgetListTemplate" type="text/x-handlebars-template">

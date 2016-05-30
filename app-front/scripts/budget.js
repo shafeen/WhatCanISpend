@@ -33,11 +33,9 @@ var budgetPageUtil = (function($) {
             $.get(infoApiPath).done(function (budgetInfo) {
                 var $budgetItemList = $('.budgetItemList').hide()
                     .filter('[data-budget-id=' + budgetId + ']').empty().show();
-                budgetInfo.items.forEach(function (item) {
-                    var $item = $(_compiledTemplate('listItemTemplate')(item));
-                    $budgetItemList.append($item);
-                    $item.hide().fadeIn('slow');
-                });
+                var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
+                $budgetItemList.append($items);
+                $items.hide().fadeIn('slow');
             }).fail(function () {
                 alert("Couldn't get budget info from: "+infoApiPath);
             });
