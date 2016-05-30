@@ -23,9 +23,9 @@ The budget application we were all looking for!!!!
 
 
 **Web Interface**
-- [ ] List and view all existing budgets.
+- [X] List and view all existing budgets.
     - [ ] Option to create a budget at the end of the list.
-- [ ] Click on a budget and be able to view all items in that budget.
+- [X] Click on a budget and be able to view all items in that budget.
     - [ ] Option to add items at the end of the item list.
 - [ ] Edit items and information about a specific budget.
     - [ ] more details to be added soon.... 

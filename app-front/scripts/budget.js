@@ -56,8 +56,10 @@ var budgetPageUtil = (function($) {
     };
 
     function initClickHandlers() {
+        // TODO: the create budget form should be a modal
         $('#budget-create-show-btn').click(_clickHandlers.budgetCreateShow);
         $('#budget-create-btn').click(_clickHandlers.budgetCreate);
+        // TODO: the add item form should be a modal
         $('#budget-add-item-show-btn').click(_clickHandlers.budgetAddItemShow);
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
