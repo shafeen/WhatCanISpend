@@ -115,7 +115,7 @@ app.post('/budget/additem/', function (req, res) {
 // [ params ]
 //  budgetId (int)
 app.get('/budget/:id/info/', function (req, res) {
-    console.log('received api request: /budget/:id/info/');
+    console.log('received api request: /budget/:id/info/ (id = %d)', req.params.id);
     if(!isNaN(req.params.id)) {
         var budgetId = Number(req.params.id);
         // TODO: complete this (and then remove the if statement)
