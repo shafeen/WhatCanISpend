@@ -5,11 +5,24 @@ var budgetPageUtil = (function($) {
     }
 
     var _clickHandlers = {
-        budgetCreate: function budgetCreate (e) {
+        budgetCreateShow: function budgetCreateShow (e) {
             $('#form-create-budget').fadeIn();
         },
-        budgetAddItem: function budgetAddItem (e) {
-            $('#item-start-date, #item-end-date' ).datepicker();
+        budgetCreate: function budgetCreate (e) {
+            var $createBudgetForm = $('#form-create-budget');
+            var requestParams = {
+                name: $createBudgetForm.find('#budget-name').val(),
+                amount: $createBudgetForm.find('#budget-amount').val(),
+                type: $createBudgetForm.find('#budget-type').val()
+            };
+            $.post('/budget/create/', requestParams).done(function (successInfoObj) {
+                alert(successInfoObj.message);
+            }).fail(function (failInfoObj) {
+                alert(failInfoObj.responseText);
+            })
+        },
+        budgetAddItemShow: function budgetAddItemShow (e) {
+            $('#item-start-date, #item-end-date').datepicker();
             $('#form-add-item').fadeIn();
         },
         budgetListAll: function budgetListAll (e) {
@@ -43,8 +56,9 @@ var budgetPageUtil = (function($) {
     };
 
     function initClickHandlers() {
+        $('#budget-create-show-btn').click(_clickHandlers.budgetCreateShow);
         $('#budget-create-btn').click(_clickHandlers.budgetCreate);
-        $('#budget-add-item-btn').click(_clickHandlers.budgetAddItem);
+        $('#budget-add-item-show-btn').click(_clickHandlers.budgetAddItemShow);
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
 
