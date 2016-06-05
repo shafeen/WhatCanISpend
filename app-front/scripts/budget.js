@@ -25,6 +25,22 @@ var budgetPageUtil = (function($) {
             $('#item-start-date, #item-end-date').datepicker();
             $('#form-add-item').fadeIn();
         },
+        budgetAddItem: function budgetAddItem (e) {
+            // TODO: add error handlers if any of these fields are missing
+            // TODO: change this to dynamically grab the budget id
+            var addItemParams =  {
+                budgetId : 1,
+                name : $('#item-name').val(),
+                cost : $('#item-amount').val(),
+                endDate : new Date($('#item-end-date').val()).getTime()/1000,
+                startDate : new Date($('#item-start-date').val()).getTime()/1000
+            };
+            $.post('/budget/addItem/', addItemParams).done(function () {
+                alert('Added item to budget!');
+            }).fail(function (failInfoObj) {
+                alert('Could not add item!\n'+failInfoObj.responseText);
+            });
+        },
         budgetListAll: function budgetListAll (e) {
             $.get('/budget/all/').done(function (budgetList) {
                 var $budgetList = $('#budgetList').empty();
@@ -55,6 +71,35 @@ var budgetPageUtil = (function($) {
         }
     };
 
+    var _changeHandlers = {
+        itemAmortizeLen: function itemAmortizeLen(e) {
+            var DEFAULT_AMORTIZE_LEN = 1;
+            var amortizeLen = $(this).val();
+            var startDate = $('#item-start-date').val();
+            if (!isNaN(amortizeLen) && Number(amortizeLen) > 0 && startDate) {
+                amortizeLen = parseInt(Number(amortizeLen));
+                $(this).val(amortizeLen);
+                var endDate = new Date(startDate);
+                while (amortizeLen > 1) {
+                    endDate.setDate(endDate.getDate() + 7);
+                    amortizeLen--;
+                }
+                while (endDate.getDay() !== 6) { // choose saturday of final week
+                    endDate.setDate(endDate.getDate() + 1);
+                }
+                $('#item-end-date').datepicker("setDate", endDate);
+            } else {
+                if (!startDate) {
+                    alert('You need to set a start date first!');
+                    $('#item-start-date').focus();
+                } else {
+                    alert('Invalid length entered, setting to default value!');
+                    $(this).val(DEFAULT_AMORTIZE_LEN).change();
+                }
+            }
+        }
+    };
+
     function initClickHandlers() {
         // TODO: the create budget form should be a modal
         $('#budget-create-show-btn').click(_clickHandlers.budgetCreateShow);
@@ -62,6 +107,13 @@ var budgetPageUtil = (function($) {
         // TODO: the add item form should be a modal
         $('#budget-add-item-show-btn').click(_clickHandlers.budgetAddItemShow);
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
+    }
+
+    // TODO: get addItem component of web interface working
+    function initAddItemComponent() {
+        // TODO: form verification code can also go here
+        $('#amortize-length').change(_changeHandlers.itemAmortizeLen);
+        $('#budget-add-item-btn').click(_clickHandlers.budgetAddItem);
     }
 
     var compiledTemplates = {};
@@ -77,11 +129,13 @@ var budgetPageUtil = (function($) {
 
     return {
         hideUnusedForms: hideUnusedForms,
-        initClickHandlers: initClickHandlers
+        initClickHandlers: initClickHandlers,
+        initAddItemComponent: initAddItemComponent
     }
 })(jQuery);
 
 $(document).ready(function () {
     budgetPageUtil.hideUnusedForms();
     budgetPageUtil.initClickHandlers();
+    budgetPageUtil.initAddItemComponent();
 });
