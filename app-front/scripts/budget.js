@@ -26,7 +26,6 @@ var budgetPageUtil = (function($) {
             $('#form-add-item').fadeIn();
         },
         budgetAddItem: function budgetAddItem (e) {
-            // TODO: add error handlers if any of these fields are missing
             // TODO: change this to dynamically grab the budget id
             var addItemParams =  {
                 budgetId : 1,
@@ -35,11 +34,30 @@ var budgetPageUtil = (function($) {
                 endDate : new Date($('#item-end-date').val()).getTime()/1000,
                 startDate : new Date($('#item-start-date').val()).getTime()/1000
             };
-            $.post('/budget/addItem/', addItemParams).done(function () {
-                alert('Added item to budget!');
-            }).fail(function (failInfoObj) {
-                alert('Could not add item!\n'+failInfoObj.responseText);
-            });
+            if (!addItemParams.name) {
+                alert('Please enter a name for the item!');
+                $('#item-name').focus();
+            } else if (isNaN(addItemParams.cost) || Number(addItemParams.cost) <= 0) {
+                alert('Item cost must be a number and nonzero!');
+                $('#item-amount').focus();
+            } else if (isNaN(addItemParams.startDate)) {
+                alert('Please enter a valid start date!');
+                $('#item-start-date').val('').focus();
+            } else if (isNaN(addItemParams.endDate)) {
+                alert('Please enter a valid end date!');
+                $('#item-end-date').val('').focus();
+            } else {
+                $.post('/budget/addItem/', addItemParams).done(function () {
+                    alert('Added item to budget.');
+                    $('#item-name, ' +
+                      '#item-amount, ' +
+                      '#item-start-date, ' +
+                      '#amortize-length, ' +
+                      '#item-end-date').val('');
+                }).fail(function (failInfoObj) {
+                    alert('Could not add item!\n'+failInfoObj.responseText);
+                });
+            }
         },
         budgetListAll: function budgetListAll (e) {
             $.get('/budget/all/').done(function (budgetList) {
