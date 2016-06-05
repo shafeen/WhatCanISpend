@@ -41,7 +41,7 @@
 <body class="container">
     <div>
         <button id="budget-create-show-btn" class="btn btn-default">Create budget</button>
-        <button id="budget-add-item-show-btn" class="btn btn-default">Add item to Budget</button>
+        <button id="budget-add-item-show-btn" class="btn btn-default" data-toggle="modal" data-target="#form-add-item">Add item to Budget</button>
         <button id="budget-list-all" class="btn btn-default">List all budgets</button>
         <button id="budget-edit" class="btn btn-default">Edit a budget</button>
     </div>
@@ -53,15 +53,31 @@
         <label>amount <input id="budget-amount" class="form-control" placeholder="Enter amount $" type="number" min="0"/></label><br/>
         <input id="budget-create-btn" class="btn btn-success form-control" type="button" value="create"/><br/>
     </div>
-    <div id="form-add-item" class="form-inline">
-        <h4>Add new item</h4>
-        <label>name <input id="item-name" class="form-control" placeholder="enter name here" type="text"/></label><br/>
-        <label>total cost <input id="item-amount" type="number" class="form-control" min="0"/></label><br/>
-        <label>start date <input id="item-start-date" type="text" class="form-control" /></label><br/>
-        <label>amortize for <input id="amortize-length" type="number" placeholder="length to amortize" class="form-control" min="1"/></label><br/>
-        <label>end date <input id="item-end-date" type="text" class="form-control"/></label><br/>
-        <input id="budget-add-item-btn" class="btn btn-success form-control" type="button" value="add"/><br/>
-    </div>
+
+    <div id="form-add-item" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add new item</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-inline form-horizontal">
+                        <div class="row"><label for="item-name" class="col-md-3 control-label">name</label><div class="col-md-9"><input id="item-name" class="form-control" placeholder="enter name here" type="text"/></div></div>
+                        <div class="row"><label for="item-amount" class="col-md-3 control-label">total cost</label><div class="col-md-9"><input id="item-amount" type="number" class="form-control" min="0"/></div></div>
+                        <div class="row"><label for="item-start-date" class="col-md-3 control-label">start date</label><div class="col-md-9"><input id="item-start-date" type="text" class="form-control" /></div></div>
+                        <div class="row"><label for="amortize-length" class="col-md-3 control-label">amortize for</label><div class="col-md-9"><input id="amortize-length" type="number" placeholder="length to amortize" class="form-control" min="1"/></div></div>
+                        <div class="row"><label for="item-end-date" class="col-md-3 control-label">end date</label><div class="col-md-9"><input id="item-end-date" type="text" class="form-control"/></div></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="budget-add-item-btn" type="button" class="btn btn-primary">Add Item</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 
     <div id="budgetList" class="container"></div>
 

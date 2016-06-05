@@ -21,10 +21,6 @@ var budgetPageUtil = (function($) {
                 alert(failInfoObj.responseText);
             })
         },
-        budgetAddItemShow: function budgetAddItemShow (e) {
-            $('#item-start-date, #item-end-date').datepicker();
-            $('#form-add-item').fadeIn();
-        },
         budgetAddItem: function budgetAddItem (e) {
             // TODO: change this to dynamically grab the budget id
             var addItemParams =  {
@@ -54,6 +50,7 @@ var budgetPageUtil = (function($) {
                       '#item-start-date, ' +
                       '#amortize-length, ' +
                       '#item-end-date').val('');
+                    $('#form-add-item').modal('hide');
                 }).fail(function (failInfoObj) {
                     alert('Could not add item!\n'+failInfoObj.responseText);
                 });
@@ -122,13 +119,12 @@ var budgetPageUtil = (function($) {
         // TODO: the create budget form should be a modal
         $('#budget-create-show-btn').click(_clickHandlers.budgetCreateShow);
         $('#budget-create-btn').click(_clickHandlers.budgetCreate);
-        // TODO: the add item form should be a modal
-        $('#budget-add-item-show-btn').click(_clickHandlers.budgetAddItemShow);
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
 
     // TODO: get addItem component of web interface working
     function initAddItemComponent() {
+        $('#item-start-date, #item-end-date').datepicker();
         // TODO: form verification code can also go here
         $('#amortize-length').change(_changeHandlers.itemAmortizeLen);
         $('#budget-add-item-btn').click(_clickHandlers.budgetAddItem);
