@@ -27,15 +27,18 @@
     <script id="budgetListAccordionTemplate" type="text/x-handlebars-template">
         {{#each budgets}}
         <div class="panel panel-default">
-            <div id="budget-{{this.id}}-items-heading" data-budget-id="{{this.id}}" class="panel-heading" role="tab">
-                <div class="col-md-3 panel-title">{{this.name}}</div>
-                <div class="col-md-3">{{this.amount}}</div>
-                <div class="col-md-3">{{this.type}}</div>
-                <a class="col-md-2 btn btn-warning get-budget-info-btn"
-                   role="button"
-                   data-toggle="collapse" data-parent="#budgetList" href="#budget-{{this.id}}-items"
-                   aria-expanded="false" aria-controls="budget-{{this.id}}-items"
-                   data-budget-id="{{this.id}}">Get Info</a>
+            <div id="budget-{{this.id}}-items-heading" data-budget-id="{{this.id}}"
+                 class="panel-heading" role="tab">
+                <h4 class="panel-title">
+                    <a class="get-budget-info-btn collapsed"
+                       role="button"
+                       data-toggle="collapse" data-parent="#budgetList" href="#budget-{{this.id}}-items"
+                       aria-expanded="false" aria-controls="budget-{{this.id}}-items"
+                       data-budget-id="{{this.id}}">{{this.name}}
+                    </a>
+                </h4>
+                <span>${{this.amount}}</span>
+                <span>{{this.type}}</span>
             </div>
             <div id="budget-{{this.id}}-items" class="panel-collapse collapse"
                  role="tabpanel" aria-labelledby="budget-{{this.id}}-items-heading">
