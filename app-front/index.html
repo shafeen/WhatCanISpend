@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Our test page</title>
+    <title>WhatCanISpend?!</title>
     <script defer src="/lib/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <script defer src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
@@ -24,17 +24,24 @@
         {{/each}}
     </script>
 
-    <script id="budgetListTemplate" type="text/x-handlebars-template">
+    <script id="budgetListAccordionTemplate" type="text/x-handlebars-template">
         {{#each budgets}}
-        <div class="row" data-budget-id="{{this.id}}">
-            <div class="col-md-3">{{this.name}}</div>
-            <div class="col-md-3">{{this.amount}}</div>
-            <div class="col-md-3">{{this.type}}</div>
-            <input type="button" data-budget-id="{{this.id}}"
-                   class="btn btn-warning col-md-2 get-budget-info-btn"
-                   value="Get Info"/>
+        <div class="panel panel-default">
+            <div id="budget-{{this.id}}-items-heading" data-budget-id="{{this.id}}" class="panel-heading" role="tab">
+                <div class="col-md-3 panel-title">{{this.name}}</div>
+                <div class="col-md-3">{{this.amount}}</div>
+                <div class="col-md-3">{{this.type}}</div>
+                <a class="col-md-2 btn btn-warning get-budget-info-btn"
+                   role="button"
+                   data-toggle="collapse" data-parent="#budgetList" href="#budget-{{this.id}}-items"
+                   aria-expanded="false" aria-controls="budget-{{this.id}}-items"
+                   data-budget-id="{{this.id}}">Get Info</a>
+            </div>
+            <div id="budget-{{this.id}}-items" class="panel-collapse collapse"
+                 role="tabpanel" aria-labelledby="budget-{{this.id}}-items-heading">
+                <div class="row container panel-body budgetItemList" data-budget-id="{{this.id}}"></div>
+            </div>
         </div>
-        <div class="row container budgetItemList" data-budget-id="{{this.id}}"></div>
         {{/each}}
     </script>
 </head>
@@ -78,8 +85,7 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-
-    <div id="budgetList" class="container"></div>
+    <div id="budgetList" class="panel-group" role="tablist" aria-multiselectable="true"></div>
 
 </body>
 </html>

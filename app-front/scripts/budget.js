@@ -59,7 +59,7 @@ var budgetPageUtil = (function($) {
         budgetListAll: function budgetListAll (e) {
             $.get('/budget/all/').done(function (budgetList) {
                 var $budgetList = $('#budgetList').empty();
-                var $budgets = $(_compiledTemplate('budgetListTemplate')({budgets: budgetList}));
+                var $budgets = $(_compiledTemplate('budgetListAccordionTemplate')({budgets: budgetList}));
                 $budgetList.append($budgets);
                 $budgets.hide().fadeIn('slow');
                 // attach click handlers to each of the "Get Info" budgets
@@ -75,10 +75,9 @@ var budgetPageUtil = (function($) {
             var budgetId = $(this).attr('data-budget-id');
             var infoApiPath = '/budget/'+budgetId+'/info/';
             $.get(infoApiPath).done(function (budgetInfo) {
-                var $budgetItemList = $('.budgetItemList').hide()
-                    .filter('[data-budget-id=' + budgetId + ']').empty().show();
+                var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
                 var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
-                $budgetItemList.append($items);
+                $budgetItemList.empty().append($items);
                 $items.hide().fadeIn('slow');
             }).fail(function () {
                 alert("Couldn't get budget info from: "+infoApiPath);
