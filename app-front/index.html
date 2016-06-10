@@ -15,7 +15,7 @@
 
     <script id="listItemTemplate" type="text/x-handlebars-template">
         {{#each items}}
-        <div class="row" data-item-id="{{this.item_id}}">
+        <div class="row container" data-item-id="{{this.item_id}}">
             <div class="col-md-4">{{this.description}}</div>
             <div class="col-md-2">{{this.cost}}</div>
             <div class="col-md-2">{{this.duration}} week(s)</div>
@@ -42,7 +42,7 @@
             </div>
             <div id="budget-{{this.id}}-items" class="panel-collapse collapse"
                  role="tabpanel" aria-labelledby="budget-{{this.id}}-items-heading">
-                <div class="row container panel-body budgetItemList" data-budget-id="{{this.id}}"></div>
+                <div class="panel-body budgetItemList" data-budget-id="{{this.id}}"></div>
             </div>
         </div>
         {{/each}}
