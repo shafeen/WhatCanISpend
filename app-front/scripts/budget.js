@@ -74,6 +74,7 @@ var budgetPageUtil = (function($) {
                 var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
                 $budgetItemList.empty().append($items);
                 $items.hide().fadeIn('slow');
+                $budgetItemList.find('[data-toggle="tooltip"]').tooltip();
                 $budgetItemList.find('.budget-add-item-show-btn').click(function () {
                     $('#budget-add-item-btn').attr('data-budget-id', budgetId);
                 });
@@ -109,6 +110,11 @@ var budgetPageUtil = (function($) {
                     $(this).val(DEFAULT_AMORTIZE_LEN).change();
                 }
             }
+        },
+        itemStartDate: function itemStartDate(e) {
+            $('#item-end-date').datepicker('destroy').datepicker({
+                minDate: new Date($('#item-start-date').val())
+            });
         }
     };
 
@@ -117,12 +123,32 @@ var budgetPageUtil = (function($) {
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
 
-    // TODO: get addItem component of web interface working
     function initAddItemComponent() {
-        $('#item-start-date, #item-end-date').datepicker();
-        // TODO: form verification code can also go here
+        $('#item-start-date').datepicker({
+            minDate : getStartDateForWeekOf(new Date()),
+            maxDate : getEndDateForWeekOf(new Date())
+        }).change(_changeHandlers.itemStartDate);
+        $('#item-end-date').datepicker({
+            minDate : getStartDateForWeekOf(new Date())
+        });
         $('#amortize-length').change(_changeHandlers.itemAmortizeLen);
         $('#budget-add-item-btn').click(_clickHandlers.budgetAddItem);
+    }
+
+    function getStartDateForWeekOf(date) {
+        date = date ? date : new Date();
+        while (date.getDay() != 0) {
+            date.setDate(date.getDate()-1);
+        }
+        return date;
+    }
+
+    function getEndDateForWeekOf(date) {
+        date = date ? date : new Date();
+        while (date.getDay() != 6) {
+            date.setDate(date.getDate()+1);
+        }
+        return date;
     }
 
     var compiledTemplates = {};
