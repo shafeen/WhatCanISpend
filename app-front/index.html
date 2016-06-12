@@ -16,7 +16,7 @@
     <script id="listItemTemplate" type="text/x-handlebars-template">
         <li class="list-group-item" style="padding: 0;">
             <button type="button" class="btn btn-info btn-sm btn-block budget-add-item-show-btn"
-                    data-toggle="modal" data-target="#form-add-item">Add item</button>
+                    data-toggle="modal" data-target="#modal-add-item">Add item</button>
         </li>
         {{#each items}}
         <li class="list-group-item" >
@@ -57,12 +57,12 @@
 </head>
 <body class="container">
     <div>
-        <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#form-create-budget">Create budget</button>
+        <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#modal-create-budget">Create budget</button>
         <button id="budget-list-all" class="btn btn-default">List all budgets</button>
         <button id="budget-edit" class="btn btn-default">Edit a budget</button>
     </div>
 
-    <div id="form-create-budget" class="modal fade" tabindex="-1" role="dialog">
+    <div id="modal-create-budget" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -84,7 +84,7 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div id="form-add-item" class="modal fade" tabindex="-1" role="dialog">
+    <div id="modal-add-item" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

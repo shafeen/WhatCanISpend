@@ -2,16 +2,16 @@ var budgetPageUtil = (function($) {
 
     var _clickHandlers = {
         budgetCreate: function budgetCreate (e) {
-            var $createBudgetForm = $('#form-create-budget');
+            var $createBudgetModal = $('#modal-create-budget');
             var requestParams = {
-                name: $createBudgetForm.find('#budget-name').val(),
-                amount: $createBudgetForm.find('#budget-amount').val(),
-                type: $createBudgetForm.find('#budget-type').val()
+                name: $createBudgetModal.find('#budget-name').val(),
+                amount: $createBudgetModal.find('#budget-amount').val(),
+                type: $createBudgetModal.find('#budget-type').val()
             };
             $.post('/budget/create/', requestParams).done(function (successInfoObj) {
                 alert(successInfoObj.message);
-                $createBudgetForm.find('#budget-name, #budget-amount, #budget-type').val('');
-                $('#form-create-budget').modal('hide');
+                $createBudgetModal.find('#budget-name, #budget-amount, #budget-type').val('');
+                $('#modal-create-budget').modal('hide');
             }).fail(function (failInfoObj) {
                 alert(failInfoObj.responseText);
             });
@@ -44,7 +44,7 @@ var budgetPageUtil = (function($) {
                       '#item-start-date, ' +
                       '#amortize-length, ' +
                       '#item-end-date').val('');
-                    $('#form-add-item').modal('hide');
+                    $('#modal-add-item').modal('hide');
                     _clickHandlers.budgetGetInfo(e); // reload info for this budget item list
                 }).fail(function (failInfoObj) {
                     alert('Could not add item!\n'+failInfoObj.responseText);
