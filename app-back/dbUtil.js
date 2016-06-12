@@ -118,9 +118,9 @@ function getBudgetInfo(budgetId) {
             "WHERE budgets.id=?", [budgetId])
         .then(function (itemObjsArray) {
             var budgetInfoObj = {
-                budgetName: itemObjsArray[0].name,
-                budgetType: itemObjsArray[0].budget_type,
-                items: itemObjsArray
+                budgetName: itemObjsArray.length? itemObjsArray[0].name : undefined,
+                budgetType: itemObjsArray.length? itemObjsArray[0].budget_type : undefined,
+                items: itemObjsArray.length? itemObjsArray : []
             };
             budgetInfoObj.items.forEach(function (item) {
                 delete item.name;
