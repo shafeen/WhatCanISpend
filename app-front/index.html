@@ -15,12 +15,14 @@
 
     <script id="listItemTemplate" type="text/x-handlebars-template">
         {{#each items}}
-        <div class="row container" data-item-id="{{this.item_id}}">
-            <div class="col-md-4">{{this.description}}</div>
-            <div class="col-md-2">{{this.cost}}</div>
-            <div class="col-md-2">{{this.duration}} week(s)</div>
-            <div class="col-md-4">ends on {{this.end_date}}</div>
-        </div>
+        <li class="list-group-item" >
+            <div class="row container" data-item-id="{{this.item_id}}">
+                <div class="col-md-4 col-sm-4">{{this.description}}</div>
+                <div class="col-md-2 col-sm-2">{{this.cost}}</div>
+                <div class="col-md-2 col-sm-2">{{this.duration}} week(s)</div>
+                <div class="col-md-4 col-sm-4">ends on {{this.end_date}}</div>
+            </div>
+        </li>
         {{/each}}
     </script>
 
@@ -42,7 +44,8 @@
             </div>
             <div id="budget-{{this.id}}-items" class="panel-collapse collapse"
                  role="tabpanel" aria-labelledby="budget-{{this.id}}-items-heading">
-                <div class="panel-body budgetItemList" data-budget-id="{{this.id}}"></div>
+                <ul class="list-group budgetItemList" data-budget-id="{{this.id}}"></ul>
+                <div class="panel-footer">"{{this.name}}" <b>totals</b> info goes here.</div>
             </div>
         </div>
         {{/each}}
