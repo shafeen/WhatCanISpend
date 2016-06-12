@@ -1,9 +1,5 @@
 var budgetPageUtil = (function($) {
 
-    function hideUnusedForms() {
-        $('#form-create-budget, #form-add-item').hide();
-    }
-
     var _clickHandlers = {
         budgetCreate: function budgetCreate (e) {
             var $createBudgetForm = $('#form-create-budget');
@@ -138,14 +134,12 @@ var budgetPageUtil = (function($) {
     }
 
     return {
-        hideUnusedForms: hideUnusedForms,
         initClickHandlers: initClickHandlers,
         initAddItemComponent: initAddItemComponent
     }
 })(jQuery);
 
 $(document).ready(function () {
-    budgetPageUtil.hideUnusedForms();
     budgetPageUtil.initClickHandlers();
     budgetPageUtil.initAddItemComponent();
 });
