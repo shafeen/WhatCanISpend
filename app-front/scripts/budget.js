@@ -5,9 +5,6 @@ var budgetPageUtil = (function($) {
     }
 
     var _clickHandlers = {
-        budgetCreateShow: function budgetCreateShow (e) {
-            $('#form-create-budget').fadeIn();
-        },
         budgetCreate: function budgetCreate (e) {
             var $createBudgetForm = $('#form-create-budget');
             var requestParams = {
@@ -17,9 +14,11 @@ var budgetPageUtil = (function($) {
             };
             $.post('/budget/create/', requestParams).done(function (successInfoObj) {
                 alert(successInfoObj.message);
+                $createBudgetForm.find('#budget-name, #budget-amount, #budget-type').val('');
+                $('#form-create-budget').modal('hide');
             }).fail(function (failInfoObj) {
                 alert(failInfoObj.responseText);
-            })
+            });
         },
         budgetAddItem: function budgetAddItem (e) {
             // TODO: change this to dynamically grab the budget id
@@ -115,8 +114,6 @@ var budgetPageUtil = (function($) {
     };
 
     function initClickHandlers() {
-        // TODO: the create budget form should be a modal
-        $('#budget-create-show-btn').click(_clickHandlers.budgetCreateShow);
         $('#budget-create-btn').click(_clickHandlers.budgetCreate);
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }

@@ -53,19 +53,33 @@
 </head>
 <body class="container">
     <div>
-        <button id="budget-create-show-btn" class="btn btn-default">Create budget</button>
+        <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#form-create-budget">Create budget</button>
         <button id="budget-add-item-show-btn" class="btn btn-default" data-toggle="modal" data-target="#form-add-item">Add item to Budget</button>
         <button id="budget-list-all" class="btn btn-default">List all budgets</button>
         <button id="budget-edit" class="btn btn-default">Edit a budget</button>
     </div>
 
-    <div id="form-create-budget" class="form-inline">
-        <h4>Create new budget</h4>
-        <label>name <input id="budget-name" class="form-control" placeholder="enter name here" type="text"/></label><br/>
-        <label>amortized <select id="budget-type" class="form-control"><option value="weekly">weekly</option></select></label><br/>
-        <label>amount <input id="budget-amount" class="form-control" placeholder="Enter amount $" type="number" min="0"/></label><br/>
-        <input id="budget-create-btn" class="btn btn-success form-control" type="button" value="create"/><br/>
-    </div>
+    <div id="form-create-budget" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Create new budget</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-inline form-horizontal">
+                        <div class="row"><label for="budget-name" class="col-md-3 col-sm-3 control-label">name</label><div class="col-md-9 col-sm-9"><input id="budget-name" class="form-control" placeholder="enter name here" type="text"/></div></div>
+                        <div class="row"><label for="budget-type" class="col-md-3 col-sm-3 control-label">amortized</label><div class="col-md-9 col-sm-9"><select id="budget-type" class="form-control"><option value="weekly">weekly</option></select></div></div>
+                        <div class="row"><label for="budget-amount" class="col-md-3 col-sm-3 control-label">amount</label><div class="col-md-9 col-sm-9"><input id="budget-amount" class="form-control" placeholder="Enter amount $" type="number" min="0"/></div></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="budget-create-btn" type="button" class="btn btn-primary">Create</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <div id="form-add-item" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
