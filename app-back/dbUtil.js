@@ -104,6 +104,7 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
     return duration;
 }
 
+// TODO: this only works for weekly budgets, extend this to work for month/year.
 function getBudgetInfo(budgetId) {
     return new Promise(function (resolve, reject) {
         // TODO: complete this function
@@ -115,7 +116,10 @@ function getBudgetInfo(budgetId) {
             "FROM budgets JOIN " +
             "items ON budgets.id = items.budget_id JOIN " +
             "budget_types ON budgets.type_id = budget_types.id " +
-            "WHERE budgets.id=?", [budgetId])
+            "WHERE budgets.id=? AND " +
+            "start_date <= DATE(?, 'unixepoch') AND " +
+            "end_date >= DATE(?, 'unixepoch')",
+            [budgetId, getEndDateForWeekOf(new Date()), getStartDateForWeekOf(new Date())])
         .then(function (itemObjsArray) {
             var budgetInfoObj = {
                 budgetName: itemObjsArray.length? itemObjsArray[0].name : undefined,
@@ -131,6 +135,22 @@ function getBudgetInfo(budgetId) {
             reject(errorObj);
         });
     });
+}
+
+function getStartDateForWeekOf(date) {
+    date = date ? date : new Date();
+    while (date.getDay() != 0) {
+        date.setDate(date.getDate()-1);
+    }
+    return parseInt(date.getTime()/1000);
+}
+
+function getEndDateForWeekOf(date) {
+    date = date ? date : new Date();
+    while (date.getDay() != 6) {
+        date.setDate(date.getDate()+1);
+    }
+    return parseInt(date.getTime()/1000);
 }
 
 function getSelectQueryResults(query, params) {
