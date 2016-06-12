@@ -17,9 +17,8 @@ var budgetPageUtil = (function($) {
             });
         },
         budgetAddItem: function budgetAddItem (e) {
-            // TODO: change this to dynamically grab the budget id
             var addItemParams =  {
-                budgetId : 1,
+                budgetId : parseInt($(e.target).attr('data-budget-id')),
                 name : $('#item-name').val(),
                 cost : $('#item-amount').val(),
                 endDate : new Date($('#item-end-date').val()).getTime()/1000,
@@ -46,6 +45,7 @@ var budgetPageUtil = (function($) {
                       '#amortize-length, ' +
                       '#item-end-date').val('');
                     $('#form-add-item').modal('hide');
+                    _clickHandlers.budgetGetInfo(e); // reload info for this budget item list
                 }).fail(function (failInfoObj) {
                     alert('Could not add item!\n'+failInfoObj.responseText);
                 });
@@ -67,13 +67,16 @@ var budgetPageUtil = (function($) {
             })
         },
         budgetGetInfo: function budgetGetInfo (e) {
-            var budgetId = $(this).attr('data-budget-id');
+            var budgetId = $(e.target).attr('data-budget-id');
             var infoApiPath = '/budget/'+budgetId+'/info/';
             $.get(infoApiPath).done(function (budgetInfo) {
                 var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
                 var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
                 $budgetItemList.empty().append($items);
                 $items.hide().fadeIn('slow');
+                $budgetItemList.find('.budget-add-item-show-btn').click(function () {
+                    $('#budget-add-item-btn').attr('data-budget-id', budgetId);
+                });
             }).fail(function () {
                 alert("Couldn't get budget info from: "+infoApiPath);
             });
