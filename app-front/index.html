@@ -16,15 +16,15 @@
     <script id="listItemTemplate" type="text/x-handlebars-template">
         <li class="list-group-item" style="padding: 0;">
             <button type="button" class="btn btn-info btn-sm btn-block budget-add-item-show-btn"
-                    data-toggle="modal" data-target="#modal-add-item"><span class="glyphicon glyphicon-plus-sign"></span> <b>Add Item</b></button>
+                    data-toggle="modal" data-target="#modal-add-item">Add item</button>
         </li>
         {{#each items}}
         <li class="list-group-item" >
-            <div class="row container" data-item-id="{{this.item_id}}">
-                <div class="col-md-4 col-sm-4">{{this.description}}</div>
-                <div class="col-md-2 col-sm-2">{{this.cost}}</div>
-                <div class="col-md-2 col-sm-2">{{this.duration}} week(s)</div>
-                <div class="col-md-4 col-sm-4">ends on {{this.end_date}}</div>
+            <div class="row" data-item-id="{{this.item_id}}">
+                <div class="col-lg-4 col-md-4 col-sm-4">{{this.description}}</div>
+                <div class="col-lg-2 col-md-2 col-sm-2">{{this.cost}}</div>
+                <div class="col-lg-2 col-md-2 col-sm-2">{{this.duration}} week(s)</div>
+                <div class="col-lg-4 col-md-4 col-sm-4">ends on {{this.end_date}}</div>
             </div>
         </li>
         {{/each}}
@@ -56,11 +56,6 @@
     </script>
 </head>
 <body class="container">
-    <div>
-        <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#modal-create-budget"><span class="glyphicon glyphicon-plus-sign small"></span> Create budget</button>
-        <button id="budget-list-all" class="btn btn-default">List all budgets <span class="glyphicon glyphicon-triangle-bottom small"></span></button>
-        <button id="budget-edit" class="btn btn-default">Edit a budget <span class="glyphicon glyphicon-edit small"></span></button>
-    </div>
 
     <div id="modal-create-budget" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
@@ -108,7 +103,16 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div id="budgetList" class="panel-group" role="tablist" aria-multiselectable="true"></div>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8">
+            <div>
+                <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#modal-create-budget">Create budget</button>
+                <button id="budget-list-all" class="btn btn-default">List all budgets</button>
+                <button id="budget-edit" class="btn btn-default">Edit a budget</button>
+            </div>
+            <div id="budgetList" class="panel-group" role="tablist" aria-multiselectable="true"></div>
+        </div>
+    </div>
 
 </body>
 </html>
