@@ -19,6 +19,14 @@
                     data-toggle="modal" data-target="#modal-add-item"><span class="glyphicon glyphicon-plus-sign"></span> Add item</button>
         </li>
         {{#if items}}
+            <li class="list-group-item" >
+                <div class="row text-info" data-item-id="{{this.item_id}}">
+                    <div class="col-lg-4 col-md-4 col-sm-4"><b>Description</b></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2"><b>Cost</b></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2"><b>Amortized</b></div>
+                    <div class="col-lg-4 col-md-4 col-sm-4"><b>End Date</b></div>
+                </div>
+            </li>
             {{#each items}}
             <li class="list-group-item" >
                 <div class="row" data-item-id="{{this.item_id}}">
