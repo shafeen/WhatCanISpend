@@ -144,6 +144,7 @@ app.use('/lib/', express.static('../node_modules/jquery/dist/'));
 app.use('/lib/', express.static('../node_modules/handlebars/dist/'));
 app.use('/images/', express.static('../app-front/images/'));
 app.use('/scripts/', express.static('../app-front/scripts/'));
+app.use('/fonts/', express.static('../node_modules/bootstrap/fonts/'));
 
 app.listen(3000, function () {
     console.log('WhatCanISpend app listening on port 3000!');
