@@ -120,7 +120,7 @@ var budgetPageUtil = (function($) {
                     }
                     ;
                 } else if (budgetType == 'monthly') {
-                    // TODO:
+                    // TODO: this way of finding the last day of the month can be easily improved
                     while (amortizeLen > 1) {
                         var startMonth = endDate.getMonth();
                         while (startMonth == endDate.getMonth()) {
@@ -135,6 +135,14 @@ var budgetPageUtil = (function($) {
                         endDate.setDate(endDate.getDate() + 1);
                     }
                     endDate.setDate(endDate.getDate() - 1);
+                } else if (budgetType == 'yearly') {
+                    while (amortizeLen > 1) {
+                        endDate.setYear(endDate.getFullYear() + 1);
+                        amortizeLen--;
+                    }
+                    // choose the last day of that year
+                    endDate.setMonth(11);
+                    endDate.setDate(31);
                 }
                 $('#item-end-date').datepicker("setDate", endDate)
             } else {

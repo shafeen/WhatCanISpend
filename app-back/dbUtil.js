@@ -86,14 +86,13 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
 
 function getBudgetDuration(startDate, endDate, budgetTypeId) {
     var WEEKLY = 1, MONTHLY = 2, YEARLY = 3;
-    var duration = 0;
+    var duration = 1;
     var start = new Date(0), end = new Date(0);
     start.setUTCSeconds(startDate);
     end.setUTCSeconds(endDate);
     if (budgetTypeId == WEEKLY) {
         duration = parseInt((end - start) / (1000*60*60*24)/7) + 1;
     } else if (budgetTypeId == MONTHLY) {
-        duration = 1;
         while (start.getTime() != end.getTime()) {
             var startMonth = start.getMonth();
             start.setDate(start.getDate() + 1);
@@ -102,8 +101,7 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
             }
         }
     } else if (budgetTypeId == YEARLY) {
-        // TODO: not supported at the moment
-        duration = -1;
+        duration = end.getFullYear() - start.getFullYear() + 1;
     } else {
         duration = -1;
     }
