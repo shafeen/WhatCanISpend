@@ -32,7 +32,7 @@
                 <div class="row" data-item-id="{{this.item_id}}">
                     <div class="col-lg-4 col-md-4 col-sm-4">{{this.description}}</div>
                     <div class="col-lg-2 col-md-2 col-sm-2">{{this.cost}}</div>
-                    <div class="col-lg-2 col-md-2 col-sm-2">{{this.duration}} week(s)</div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">{{this.durationStr}}</div>
                     <div class="col-lg-4 col-md-4 col-sm-4">ends on {{this.end_date}}</div>
                 </div>
             </li>
@@ -56,7 +56,7 @@
                        role="button"
                        data-toggle="collapse" data-parent="#budgetList" href="#budget-{{this.id}}-items"
                        aria-expanded="false" aria-controls="budget-{{this.id}}-items"
-                       data-budget-id="{{this.id}}">{{this.name}}
+                       data-budget-id="{{this.id}}" data-budget-type="{{this.type}}">{{this.name}}
                     </a>
                 </h4>
                 <span>${{this.amount}}</span>
@@ -83,7 +83,7 @@
                 <div class="modal-body">
                     <div class="row form-inline form-horizontal">
                         <div class="row"><label for="budget-name" class="col-md-3 col-sm-3 control-label">name</label><div class="col-md-9 col-sm-9"><input id="budget-name" class="form-control" placeholder="enter name here" type="text"/></div></div>
-                        <div class="row"><label for="budget-type" class="col-md-3 col-sm-3 control-label">amortized</label><div class="col-md-9 col-sm-9"><select id="budget-type" class="form-control"><option value="weekly">weekly</option></select></div></div>
+                        <div class="row"><label for="budget-type" class="col-md-3 col-sm-3 control-label">amortized</label><div class="col-md-9 col-sm-9"><select id="budget-type" class="form-control"><option value="weekly">weekly</option><option value="monthly">monthly</option></select></div></div>
                         <div class="row"><label for="budget-amount" class="col-md-3 col-sm-3 control-label">amount</label><div class="col-md-9 col-sm-9"><input id="budget-amount" class="form-control" placeholder="Enter amount $" type="number" min="0"/></div></div>
                     </div>
                 </div>

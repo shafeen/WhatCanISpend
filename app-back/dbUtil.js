@@ -93,8 +93,14 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
     if (budgetTypeId == WEEKLY) {
         duration = parseInt((end - start) / (1000*60*60*24)/7) + 1;
     } else if (budgetTypeId == MONTHLY) {
-        // TODO: not supported at the moment
-        duration = -1;
+        duration = 1;
+        while (start.getTime() != end.getTime()) {
+            var startMonth = start.getMonth();
+            start.setDate(start.getDate() + 1);
+            if (startMonth != start.getMonth()) {
+                duration++;
+            }
+        }
     } else if (budgetTypeId == YEARLY) {
         // TODO: not supported at the moment
         duration = -1;

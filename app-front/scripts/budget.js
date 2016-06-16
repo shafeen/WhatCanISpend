@@ -70,6 +70,21 @@ var budgetPageUtil = (function($) {
             var budgetId = $(e.target).attr('data-budget-id');
             var infoApiPath = '/budget/'+budgetId+'/info/';
             $.get(infoApiPath).done(function (budgetInfo) {
+                var budgetType = $(e.target).attr('data-budget-type');
+                budgetInfo.items = budgetInfo.items.map(function (item) {
+                    var durationPostfix;
+                    if (budgetType == 'weekly') {
+                        durationPostfix = ' week(s)'
+                    } else if (budgetType == 'monthly') {
+                        durationPostfix = ' month(s)';
+                    } else if (budgetType == 'yearly') {
+                        durationPostfix = ' year(s)';
+                    } else {
+                        durationPostfix = ' unit(s)';
+                    }
+                    item.durationStr = item.duration + durationPostfix;
+                    return item;
+                });
                 var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
                 var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
                 $budgetItemList.empty().append($items);
@@ -77,6 +92,7 @@ var budgetPageUtil = (function($) {
                 $budgetItemList.find('[data-toggle="tooltip"]').tooltip();
                 $budgetItemList.find('.budget-add-item-show-btn').click(function () {
                     $('#budget-add-item-btn').attr('data-budget-id', budgetId);
+                    $('#amortize-length').attr('data-budget-type', budgetType);
                 });
             }).fail(function () {
                 alert("Couldn't get budget info from: "+infoApiPath);
@@ -90,17 +106,37 @@ var budgetPageUtil = (function($) {
             var amortizeLen = $(this).val();
             var startDate = $('#item-start-date').val();
             if (!isNaN(amortizeLen) && Number(amortizeLen) > 0 && startDate) {
+                var budgetType = $(e.target).attr('data-budget-type');
                 amortizeLen = parseInt(Number(amortizeLen));
-                $(this).val(amortizeLen);
                 var endDate = new Date(startDate);
-                while (amortizeLen > 1) {
-                    endDate.setDate(endDate.getDate() + 7);
-                    amortizeLen--;
+                $(this).val(amortizeLen);
+                if (budgetType == 'weekly') {
+                    while (amortizeLen > 1) {
+                        endDate.setDate(endDate.getDate() + 7);
+                        amortizeLen--;
+                    }
+                    while (endDate.getDay() !== 6) { // choose saturday of final week
+                        endDate.setDate(endDate.getDate() + 1);
+                    }
+                    ;
+                } else if (budgetType == 'monthly') {
+                    // TODO:
+                    while (amortizeLen > 1) {
+                        var startMonth = endDate.getMonth();
+                        while (startMonth == endDate.getMonth()) {
+                            endDate.setDate(endDate.getDate() + 1);
+                        }
+                        amortizeLen--;
+                        endDate.setDate(endDate.getDate() + 27);
+                    }
+                    // choose the last day of that month
+                    var startMonth = endDate.getMonth();
+                    while (startMonth == endDate.getMonth()) {
+                        endDate.setDate(endDate.getDate() + 1);
+                    }
+                    endDate.setDate(endDate.getDate() - 1);
                 }
-                while (endDate.getDay() !== 6) { // choose saturday of final week
-                    endDate.setDate(endDate.getDate() + 1);
-                }
-                $('#item-end-date').datepicker("setDate", endDate);
+                $('#item-end-date').datepicker("setDate", endDate)
             } else {
                 if (!startDate) {
                     alert('You need to set a start date first!');
@@ -171,4 +207,5 @@ var budgetPageUtil = (function($) {
 $(document).ready(function () {
     budgetPageUtil.initClickHandlers();
     budgetPageUtil.initAddItemComponent();
+    $('#budget-list-all')[0].click();
 });
