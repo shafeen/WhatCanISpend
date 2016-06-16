@@ -113,7 +113,7 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
 // TODO: this only works for weekly budgets, extend this to work for month/year.
 function getBudgetInfo(budgetId) {
     return new Promise(function (resolve, reject) {
-        // TODO: complete this function
+        // TODO: complete this function to work for "monthly" and "yearly" budget types
         getSelectQueryResults(
             "SELECT budgets.name, items.id item_id, " +
             "items.description, items.cost, " +
