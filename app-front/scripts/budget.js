@@ -120,16 +120,12 @@ var budgetPageUtil = (function($) {
                     }
                     ;
                 } else if (budgetType == 'monthly') {
-                    // TODO: this way of finding the last day of the month can be easily improved
                     while (amortizeLen > 1) {
-                        var startMonth = endDate.getMonth();
-                        while (startMonth == endDate.getMonth()) {
-                            endDate.setDate(endDate.getDate() + 1);
-                        }
+                        endDate.setMonth(endDate.getMonth() + 1);
                         amortizeLen--;
-                        endDate.setDate(endDate.getDate() + 27);
                     }
                     // choose the last day of that month
+                    endDate.setDate(28);
                     var startMonth = endDate.getMonth();
                     while (startMonth == endDate.getMonth()) {
                         endDate.setDate(endDate.getDate() + 1);
