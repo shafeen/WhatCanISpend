@@ -71,6 +71,8 @@ var budgetPageUtil = (function($) {
             var infoApiPath = '/budget/'+budgetId+'/info/';
             $.get(infoApiPath).done(function (budgetInfo) {
                 var budgetType = $(e.target).attr('data-budget-type');
+                $('#modal-add-item').attr('data-budget-type', budgetType);
+                initAddItemComponent(true);
                 budgetInfo.items = budgetInfo.items.map(function (item) {
                     var durationPostfix;
                     if (budgetType == 'weekly') {
@@ -108,38 +110,14 @@ var budgetPageUtil = (function($) {
             if (!isNaN(amortizeLen) && Number(amortizeLen) > 0 && startDate) {
                 var budgetType = $(e.target).attr('data-budget-type');
                 amortizeLen = parseInt(Number(amortizeLen));
-                var endDate = new Date(startDate);
                 $(this).val(amortizeLen);
-                if (budgetType == 'weekly') {
-                    while (amortizeLen > 1) {
-                        endDate.setDate(endDate.getDate() + 7);
-                        amortizeLen--;
-                    }
-                    while (endDate.getDay() !== 6) { // choose saturday of final week
-                        endDate.setDate(endDate.getDate() + 1);
-                    }
-                    ;
-                } else if (budgetType == 'monthly') {
-                    while (amortizeLen > 1) {
-                        endDate.setMonth(endDate.getMonth() + 1);
-                        amortizeLen--;
-                    }
-                    // choose the last day of that month
-                    endDate.setDate(28);
-                    var startMonth = endDate.getMonth();
-                    while (startMonth == endDate.getMonth()) {
-                        endDate.setDate(endDate.getDate() + 1);
-                    }
-                    endDate.setDate(endDate.getDate() - 1);
-                } else if (budgetType == 'yearly') {
-                    while (amortizeLen > 1) {
-                        endDate.setYear(endDate.getFullYear() + 1);
-                        amortizeLen--;
-                    }
-                    // choose the last day of that year
-                    endDate.setMonth(11);
-                    endDate.setDate(31);
+                var endDate = new Date(startDate);
+                while (amortizeLen) {
+                    endDate = getEndDateFor(endDate, budgetType);
+                    endDate.setDate(endDate.getDate() + 1);
+                    amortizeLen--;
                 }
+                endDate.setDate(endDate.getDate() - 1);
                 $('#item-end-date').datepicker("setDate", endDate)
             } else {
                 if (!startDate) {
@@ -163,44 +141,64 @@ var budgetPageUtil = (function($) {
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
 
-    function initAddItemComponent() {
-        $('#item-start-date').datepicker({
-            minDate : getStartDateForWeekOf(new Date()),
-            maxDate : getEndDateForWeekOf(new Date())
+    function initAddItemComponent(reset) {
+        var $addItemModal = $('#modal-add-item');
+        $('#item-start-date').datepicker('destroy').datepicker({
+            minDate : reset? getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null,
+            maxDate : reset? getEndDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
         }).change(_changeHandlers.itemStartDate);
-        $('#item-end-date').datepicker({
-            minDate : getStartDateForWeekOf(new Date())
+        $('#item-end-date').datepicker('destroy').datepicker({
+            minDate : reset? getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
         });
-        $('#amortize-length').change(_changeHandlers.itemAmortizeLen);
-        $('#budget-add-item-btn').click(_clickHandlers.budgetAddItem);
+        $('#amortize-length').off('change').change(_changeHandlers.itemAmortizeLen);
+        $('#budget-add-item-btn').off('click').click(_clickHandlers.budgetAddItem);
     }
 
-    function getStartDateForWeekOf(date) {
+    function getStartDateFor(date, budgetType) {
         date = date ? date : new Date();
-        while (date.getDay() != 0) {
-            date.setDate(date.getDate()-1);
-        }
-        return date;
-    }
-
-    function getEndDateForWeekOf(date) {
-        date = date ? date : new Date();
-        while (date.getDay() != 6) {
-            date.setDate(date.getDate()+1);
-        }
-        return date;
-    }
-
-    var compiledTemplates = {};
-    function _compiledTemplate(templateId) {
-        if (!compiledTemplates[templateId]) {
-            var $templateHtml = $('#'+templateId).html();
-            if ($templateHtml) {
-                compiledTemplates[templateId] = Handlebars.compile($templateHtml);
+        if (budgetType == 'weekly') {
+            while (date.getDay() != 0) {
+                date.setDate(date.getDate()-1);
             }
+        } else if (budgetType == 'monthly') {
+            date.setDate(1);
+        } else if (budgetType == 'yearly') {
+            date.setMonth(0);
+            date.setDate(1);
         }
-        return compiledTemplates[templateId];
+        return date;
     }
+
+    function getEndDateFor(date, budgetType) {
+        date = date ? date : new Date();
+        if (budgetType == 'weekly') {
+            while (date.getDay() != 6) {
+                date.setDate(date.getDate()+1);
+            }
+        } else if (budgetType == 'monthly') {
+            date.setMonth(date.getMonth()+1);
+            date.setDate(0);
+        } else if (budgetType == 'yearly') {
+            date.setYear(date.getFullYear()+1);
+            date.setMonth(0);
+            date.setDate(0);
+        }
+        return date;
+    }
+
+    var _compiledTemplate = function () {
+        var compiledTemplates = {};
+        function getCompiledTemplate(templateId) {
+            if (!compiledTemplates[templateId]) {
+                var $templateHtml = $('#'+templateId).html();
+                if ($templateHtml) {
+                    compiledTemplates[templateId] = Handlebars.compile($templateHtml);
+                }
+            }
+            return compiledTemplates[templateId];
+        }
+        return getCompiledTemplate
+    }();
 
     return {
         initClickHandlers: initClickHandlers,
