@@ -74,17 +74,7 @@ var budgetPageUtil = (function($) {
                 $('#modal-add-item').attr('data-budget-type', budgetType);
                 initAddItemComponent(true);
                 budgetInfo.items = budgetInfo.items.map(function (item) {
-                    var durationPostfix;
-                    if (budgetType == 'weekly') {
-                        durationPostfix = ' week(s)'
-                    } else if (budgetType == 'monthly') {
-                        durationPostfix = ' month(s)';
-                    } else if (budgetType == 'yearly') {
-                        durationPostfix = ' year(s)';
-                    } else {
-                        durationPostfix = ' unit(s)';
-                    }
-                    item.durationStr = item.duration + durationPostfix;
+                    item.durationStr = item.duration + ' ' + getBaseUnitForBudgetType(budgetType) + '(s)';
                     return item;
                 });
                 var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
@@ -184,6 +174,20 @@ var budgetPageUtil = (function($) {
             date.setDate(0);
         }
         return date;
+    }
+
+    function getBaseUnitForBudgetType(budgetType) {
+        var baseUnit;
+        if (budgetType == 'weekly') {
+            baseUnit = 'week'
+        } else if (budgetType == 'monthly') {
+            baseUnit = 'month';
+        } else if (budgetType == 'yearly') {
+            baseUnit = 'year';
+        } else {
+            baseUnit = 'unit';
+        }
+        return baseUnit;
     }
 
     var _compiledTemplate = function () {
