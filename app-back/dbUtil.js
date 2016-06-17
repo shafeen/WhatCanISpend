@@ -108,51 +108,74 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
     return duration;
 }
 
-// TODO: this only works for weekly budgets, extend this to work for month/year.
 function getBudgetInfo(budgetId) {
     return new Promise(function (resolve, reject) {
-        // TODO: complete this function to work for "monthly" and "yearly" budget types
-        getSelectQueryResults(
-            "SELECT budgets.name, items.id item_id, " +
-            "items.description, items.cost, " +
-            "items.duration, budget_types.name budget_type, " +
-            "DATE(items.start_date) start_date, DATE(items.end_date) end_date " +
-            "FROM budgets JOIN " +
-            "items ON budgets.id = items.budget_id JOIN " +
-            "budget_types ON budgets.type_id = budget_types.id " +
-            "WHERE budgets.id=? AND " +
-            "start_date <= DATE(?, 'unixepoch') AND " +
-            "end_date >= DATE(?, 'unixepoch')",
-            [budgetId, getEndDateForWeekOf(new Date()), getStartDateForWeekOf(new Date())])
-        .then(function (itemObjsArray) {
-            var budgetInfoObj = {
-                budgetName: itemObjsArray.length? itemObjsArray[0].name : undefined,
-                budgetType: itemObjsArray.length? itemObjsArray[0].budget_type : undefined,
-                items: itemObjsArray.length? itemObjsArray : []
-            };
-            budgetInfoObj.items.forEach(function (item) {
-                delete item.name;
-                delete item.budget_type;
+        getSelectQueryResults("SELECT budget_types.name " +
+            "FROM budget_types JOIN budgets " +
+            "ON budget_types.id = budgets.type_id " +
+            "WHERE budgets.id = ?", [budgetId])
+        .then(function (resultArray) {
+            var budgetTypeName = resultArray[0].name;
+            getSelectQueryResults(
+                "SELECT budgets.name, items.id item_id, " +
+                "items.description, items.cost, " +
+                "items.duration, budget_types.name budget_type, " +
+                "DATE(items.start_date) start_date, DATE(items.end_date) end_date " +
+                "FROM budgets JOIN " +
+                "items ON budgets.id = items.budget_id JOIN " +
+                "budget_types ON budgets.type_id = budget_types.id " +
+                "WHERE budgets.id=? AND " +
+                "start_date <= DATE(?, 'unixepoch') AND " +
+                "end_date >= DATE(?, 'unixepoch')",
+                [budgetId, getEndDateFor(new Date(), budgetTypeName), getStartDateFor(new Date(), budgetTypeName)])
+            .then(function (itemObjsArray) {
+                var budgetInfoObj = {
+                    budgetName: itemObjsArray.length? itemObjsArray[0].name : undefined,
+                    budgetType: itemObjsArray.length? itemObjsArray[0].budget_type : undefined,
+                    items: itemObjsArray.length? itemObjsArray : []
+                };
+                budgetInfoObj.items.forEach(function (item) {
+                    delete item.name;
+                    delete item.budget_type;
+                });
+                resolve(budgetInfoObj);
+            }).catch(function (errorObj) {
+                reject(errorObj);
             });
-            resolve(budgetInfoObj);
         }).catch(function (errorObj) {
             reject(errorObj);
         });
     });
 }
 
-function getStartDateForWeekOf(date) {
+function getStartDateFor(date, budgetType) {
     date = date ? date : new Date();
-    while (date.getDay() != 0) {
-        date.setDate(date.getDate()-1);
+    if (budgetType == 'weekly') {
+        while (date.getDay() != 0) {
+            date.setDate(date.getDate()-1);
+        }
+    } else if (budgetType == 'monthly') {
+        date.setDate(1);
+    } else if (budgetType == 'yearly') {
+        date.setMonth(0);
+        date.setDate(1);
     }
     return parseInt(date.getTime()/1000);
 }
 
-function getEndDateForWeekOf(date) {
+function getEndDateFor(date, budgetType) {
     date = date ? date : new Date();
-    while (date.getDay() != 6) {
-        date.setDate(date.getDate()+1);
+    if (budgetType == 'weekly') {
+        while (date.getDay() != 6) {
+            date.setDate(date.getDate()+1);
+        }
+    } else if (budgetType == 'monthly') {
+        date.setMonth(date.getMonth()+1);
+        date.setDate(0);
+    } else if (budgetType == 'yearly') {
+        date.setYear(date.getFullYear()+1);
+        date.setMonth(0);
+        date.setDate(0);
     }
     return parseInt(date.getTime()/1000);
 }
