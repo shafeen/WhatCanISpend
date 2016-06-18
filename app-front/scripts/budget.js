@@ -74,7 +74,18 @@ var budgetPageUtil = (function($) {
                 $('#modal-add-item').attr('data-budget-type', budgetType);
                 initAddItemComponent(true);
                 budgetInfo.items = budgetInfo.items.map(function (item) {
-                    item.durationStr = item.duration + ' ' + getBaseUnitForBudgetType(budgetType) + '(s)';
+                    var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
+                    item.durationStr = item.duration + ' ' + baseUnitForBudgetType + '(s)';
+
+                    // set some useful text about the items end date
+                    var amortizeLenRemaining = getAmortizeLenRemainingFromToday(new Date(item.end_date), budgetType);
+                    if (amortizeLenRemaining == 1) {
+                        item.actionableEndDuration = 'ending this ' + baseUnitForBudgetType;
+                    } else if (amortizeLenRemaining == 2) {
+                        item.actionableEndDuration = 'ends next ' + baseUnitForBudgetType;
+                    } else {
+                        item.actionableEndDuration = amortizeLenRemaining + ' ' + baseUnitForBudgetType + '(s) remaining';
+                    }
                     return item;
                 });
                 var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
@@ -174,6 +185,18 @@ var budgetPageUtil = (function($) {
             date.setDate(0);
         }
         return date;
+    }
+
+    function getAmortizeLenRemainingFromToday(itemEndDate, budgetType) {
+        itemEndDate = getEndDateFor(itemEndDate, budgetType); // floor value for the date according to budgetType
+        var startingPoint = getEndDateFor(new Date(), budgetType);
+        var amortizeLen = 1;
+        while (startingPoint < itemEndDate) {
+            startingPoint.setDate(startingPoint.getDate() + 1);
+            startingPoint = getEndDateFor(startingPoint, budgetType);
+            amortizeLen++;
+        }
+        return amortizeLen;
     }
 
     function getBaseUnitForBudgetType(budgetType) {
