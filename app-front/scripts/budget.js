@@ -75,8 +75,10 @@ var budgetPageUtil = (function($) {
                 initAddItemComponent(true);
                 budgetInfo.items = budgetInfo.items.map(function (item) {
                     var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
+                    item.formattedTotalCost = item.cost.toFixed(2);
+                    item.amortizedCost = (item.cost/item.duration);
+                    item.formattedAmortizedCost = item.amortizedCost.toFixed(2);
                     item.durationStr = item.duration + ' ' + baseUnitForBudgetType + '(s)';
-
                     // set some useful text about the items end date
                     var amortizeLenRemaining = getAmortizeLenRemainingFromToday(new Date(item.end_date), budgetType);
                     if (amortizeLenRemaining == 1) {
@@ -88,6 +90,15 @@ var budgetPageUtil = (function($) {
                     }
                     return item;
                 });
+                var currentExpenditure = budgetInfo.items.reduce(function (prevItem, curItem) {
+                    return prevItem.amortizedCost + curItem.amortizedCost;
+                });
+                budgetInfo.totals = {
+                    expenditure : currentExpenditure,
+                    formattedExpenditure : currentExpenditure.toFixed(2),
+                    remaining : budgetInfo.budgetAmount - currentExpenditure,
+                    formattedRemaining : (budgetInfo.budgetAmount - currentExpenditure).toFixed(2)
+                };
                 var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
                 var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
                 $budgetItemList.empty().append($items);
@@ -194,7 +205,7 @@ var budgetPageUtil = (function($) {
         while (startingPoint < itemEndDate) {
             startingPoint.setDate(startingPoint.getDate() + 1);
             startingPoint = getEndDateFor(startingPoint, budgetType);
-            amortizeLen++;
+            amortizeLen += (startingPoint < itemEndDate)? 1 : 0;
         }
         return amortizeLen;
     }

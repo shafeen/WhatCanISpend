@@ -22,8 +22,8 @@
             <li class="list-group-item" >
                 <div class="row text-info" data-item-id="{{this.item_id}}">
                     <div class="col-lg-4 col-md-4 col-sm-4"><b>Description</b></div>
-                    <div class="col-lg-2 col-md-2 col-sm-2"><b>Cost</b></div>
-                    <div class="col-lg-2 col-md-2 col-sm-2"><b>Amortized</b></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2"><b>Total Cost</b></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2"><b>Amortized Cost</b></div>
                     <div class="col-lg-4 col-md-4 col-sm-4"><b>End Date</b></div>
                 </div>
             </li>
@@ -31,8 +31,8 @@
             <li class="list-group-item" >
                 <div class="row" data-item-id="{{this.item_id}}">
                     <div class="col-lg-4 col-md-4 col-sm-4">{{this.description}}</div>
-                    <div class="col-lg-2 col-md-2 col-sm-2">{{this.cost}}</div>
-                    <div class="col-lg-2 col-md-2 col-sm-2">{{this.durationStr}}</div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">{{this.formattedTotalCost}}</div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">{{this.formattedAmortizedCost}}</div>
                     <!--<div class="col-lg-4 col-md-4 col-sm-4">ends on {{this.end_date}}</div>-->
                     <div class="col-lg-4 col-md-4 col-sm-4">{{this.actionableEndDuration}}</div>
                 </div>

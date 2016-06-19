@@ -110,12 +110,13 @@ function getBudgetDuration(startDate, endDate, budgetTypeId) {
 
 function getBudgetInfo(budgetId) {
     return new Promise(function (resolve, reject) {
-        getSelectQueryResults("SELECT budget_types.name " +
+        getSelectQueryResults("SELECT budget_types.name, budgets.amount " +
             "FROM budget_types JOIN budgets " +
             "ON budget_types.id = budgets.type_id " +
             "WHERE budgets.id = ?", [budgetId])
         .then(function (resultArray) {
             var budgetTypeName = resultArray[0].name;
+            var budgetAmount = resultArray[0].amount;
             getSelectQueryResults(
                 "SELECT budgets.name, items.id item_id, " +
                 "items.description, items.cost, " +
@@ -132,6 +133,7 @@ function getBudgetInfo(budgetId) {
                 var budgetInfoObj = {
                     budgetName: itemObjsArray.length? itemObjsArray[0].name : undefined,
                     budgetType: itemObjsArray.length? itemObjsArray[0].budget_type : undefined,
+                    budgetAmount: budgetAmount,
                     items: itemObjsArray.length? itemObjsArray : []
                 };
                 budgetInfoObj.items.forEach(function (item) {
