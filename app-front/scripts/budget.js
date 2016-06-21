@@ -71,10 +71,10 @@ var budgetPageUtil = (function($) {
             var infoApiPath = '/budget/'+budgetId+'/info/';
             $.get(infoApiPath).done(function (budgetInfo) {
                 var budgetType = $(e.target).attr('data-budget-type');
+                var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
                 $('#modal-add-item').attr('data-budget-type', budgetType);
                 initAddItemComponent(true);
                 budgetInfo.items = budgetInfo.items.map(function (item) {
-                    var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
                     item.formattedTotalCost = item.cost.toFixed(2);
                     item.amortizedCost = (item.cost/item.duration);
                     item.formattedAmortizedCost = item.amortizedCost.toFixed(2);
@@ -91,8 +91,9 @@ var budgetPageUtil = (function($) {
                     return item;
                 });
                 var currentExpenditure = budgetInfo.items.reduce(function (prevItem, curItem) {
-                    return prevItem.amortizedCost + curItem.amortizedCost;
-                });
+                    curItem.amortizedCost = prevItem.amortizedCost + curItem.amortizedCost;
+                    return curItem;
+                }).amortizedCost;
                 budgetInfo.totals = {
                     expenditure : currentExpenditure,
                     formattedExpenditure : currentExpenditure.toFixed(2),
@@ -100,10 +101,14 @@ var budgetPageUtil = (function($) {
                     formattedRemaining : (budgetInfo.budgetAmount - currentExpenditure).toFixed(2)
                 };
                 var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
+                $budgetItemList.siblings('.panel-footer').html(
+                    'Total remaining this ' + baseUnitForBudgetType + ': <b>$' + budgetInfo.totals.formattedRemaining+ '</b>')
+                    .attr('title', '$'+budgetInfo.budgetAmount.toFixed(2) + ' - $' + budgetInfo.totals.formattedExpenditure);
+
                 var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
                 $budgetItemList.empty().append($items);
                 $items.hide().fadeIn('slow');
-                $budgetItemList.find('[data-toggle="tooltip"]').tooltip();
+                $budgetItemList.parent().find('[data-toggle="tooltip"]').tooltip();
                 $budgetItemList.find('.budget-add-item-show-btn').click(function () {
                     $('#budget-add-item-btn').attr('data-budget-id', budgetId);
                     $('#amortize-length').attr('data-budget-type', budgetType);

@@ -67,7 +67,9 @@
             <div id="budget-{{this.id}}-items" class="panel-collapse collapse"
                  role="tabpanel" aria-labelledby="budget-{{this.id}}-items-heading">
                 <ul class="list-group budgetItemList" data-budget-id="{{this.id}}"></ul>
-                <div class="panel-footer">"{{this.name}}" <b>totals</b> info goes here.</div>
+                <div class="panel-footer"
+                     data-toggle="tooltip" data-placement="top"
+                     title="">"{{this.name}}" <b>totals</b> info goes here.</div>
             </div>
         </div>
         {{/each}}
