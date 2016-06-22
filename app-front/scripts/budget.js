@@ -1,4 +1,9 @@
 var budgetPageUtil = (function($) {
+    var budgetTypes = {
+        WEEKLY : 'weekly',
+        MONTHLY : 'monthly',
+        YEARLY : 'yearly'
+    };
 
     var _clickHandlers = {
         budgetCreate: function budgetCreate (e) {
@@ -173,13 +178,13 @@ var budgetPageUtil = (function($) {
 
     function getStartDateFor(date, budgetType) {
         date = date ? date : new Date();
-        if (budgetType == 'weekly') {
+        if (budgetType == budgetTypes.WEEKLY) {
             while (date.getDay() != 0) {
                 date.setDate(date.getDate()-1);
             }
-        } else if (budgetType == 'monthly') {
+        } else if (budgetType == budgetTypes.MONTHLY) {
             date.setDate(1);
-        } else if (budgetType == 'yearly') {
+        } else if (budgetType == budgetTypes.YEARLY) {
             date.setMonth(0);
             date.setDate(1);
         }
@@ -188,14 +193,14 @@ var budgetPageUtil = (function($) {
 
     function getEndDateFor(date, budgetType) {
         date = date ? date : new Date();
-        if (budgetType == 'weekly') {
+        if (budgetType == budgetTypes.WEEKLY) {
             while (date.getDay() != 6) {
                 date.setDate(date.getDate()+1);
             }
-        } else if (budgetType == 'monthly') {
+        } else if (budgetType == budgetTypes.MONTHLY) {
             date.setMonth(date.getMonth()+1);
             date.setDate(0);
-        } else if (budgetType == 'yearly') {
+        } else if (budgetType == budgetTypes.YEARLY) {
             date.setYear(date.getFullYear()+1);
             date.setMonth(0);
             date.setDate(0);
@@ -216,17 +221,8 @@ var budgetPageUtil = (function($) {
     }
 
     function getBaseUnitForBudgetType(budgetType) {
-        var baseUnit;
-        if (budgetType == 'weekly') {
-            baseUnit = 'week'
-        } else if (budgetType == 'monthly') {
-            baseUnit = 'month';
-        } else if (budgetType == 'yearly') {
-            baseUnit = 'year';
-        } else {
-            baseUnit = 'unit';
-        }
-        return baseUnit;
+        var baseUnit = budgetType.substr(0, budgetType.search('ly'));
+        return baseUnit? baseUnit : 'unknown';
     }
 
     var _compiledTemplate = function () {
