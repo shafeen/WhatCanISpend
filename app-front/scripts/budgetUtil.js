@@ -1,9 +1,4 @@
 var budgetUtil = (function($) {
-    var budgetTypes = {
-        WEEKLY : 'weekly',
-        MONTHLY : 'monthly',
-        YEARLY : 'yearly'
-    };
 
     var _clickHandlers = {
         budgetCreate: function budgetCreate (e) {
