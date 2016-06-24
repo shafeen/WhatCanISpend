@@ -1,4 +1,4 @@
-var budgetPageUtil = (function($) {
+var budgetUtil = (function($) {
     var budgetTypes = {
         WEEKLY : 'weekly',
         MONTHLY : 'monthly',
@@ -85,7 +85,8 @@ var budgetPageUtil = (function($) {
                     item.formattedAmortizedCost = item.amortizedCost.toFixed(2);
                     item.durationStr = item.duration + ' ' + baseUnitForBudgetType + '(s)';
                     // set some useful text about the items end date
-                    var amortizeLenRemaining = getAmortizeLenRemainingFromToday(new Date(item.end_date), budgetType);
+                    var americanDateStr = dateUtil.convertISOtoAmericanStr(item.end_date);
+                    var amortizeLenRemaining = dateUtil.getAmortizeLenRemainingFromToday(new Date(americanDateStr), budgetType);
                     if (amortizeLenRemaining == 1) {
                         item.actionableEndDuration = 'ending this ' + baseUnitForBudgetType;
                     } else if (amortizeLenRemaining == 2) {
@@ -135,7 +136,7 @@ var budgetPageUtil = (function($) {
                 $(this).val(amortizeLen);
                 var endDate = new Date(startDate);
                 while (amortizeLen) {
-                    endDate = getEndDateFor(endDate, budgetType);
+                    endDate = dateUtil.getEndDateFor(endDate, budgetType);
                     endDate.setDate(endDate.getDate() + 1);
                     amortizeLen--;
                 }
@@ -166,58 +167,14 @@ var budgetPageUtil = (function($) {
     function initAddItemComponent(reset) {
         var $addItemModal = $('#modal-add-item');
         $('#item-start-date').datepicker('destroy').datepicker({
-            minDate : reset? getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null,
-            maxDate : reset? getEndDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
+            minDate : reset? dateUtil.getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null,
+            maxDate : reset? dateUtil.getEndDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
         }).change(_changeHandlers.itemStartDate);
         $('#item-end-date').datepicker('destroy').datepicker({
-            minDate : reset? getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
+            minDate : reset? dateUtil.getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
         });
         $('#amortize-length').off('change').change(_changeHandlers.itemAmortizeLen);
         $('#budget-add-item-btn').off('click').click(_clickHandlers.budgetAddItem);
-    }
-
-    function getStartDateFor(date, budgetType) {
-        date = date ? date : new Date();
-        if (budgetType == budgetTypes.WEEKLY) {
-            while (date.getDay() != 0) {
-                date.setDate(date.getDate()-1);
-            }
-        } else if (budgetType == budgetTypes.MONTHLY) {
-            date.setDate(1);
-        } else if (budgetType == budgetTypes.YEARLY) {
-            date.setMonth(0);
-            date.setDate(1);
-        }
-        return date;
-    }
-
-    function getEndDateFor(date, budgetType) {
-        date = date ? date : new Date();
-        if (budgetType == budgetTypes.WEEKLY) {
-            while (date.getDay() != 6) {
-                date.setDate(date.getDate()+1);
-            }
-        } else if (budgetType == budgetTypes.MONTHLY) {
-            date.setMonth(date.getMonth()+1);
-            date.setDate(0);
-        } else if (budgetType == budgetTypes.YEARLY) {
-            date.setYear(date.getFullYear()+1);
-            date.setMonth(0);
-            date.setDate(0);
-        }
-        return date;
-    }
-
-    function getAmortizeLenRemainingFromToday(itemEndDate, budgetType) {
-        itemEndDate = getEndDateFor(itemEndDate, budgetType); // floor value for the date according to budgetType
-        var startingPoint = getEndDateFor(new Date(), budgetType);
-        var amortizeLen = 1;
-        while (startingPoint < itemEndDate) {
-            startingPoint.setDate(startingPoint.getDate() + 1);
-            startingPoint = getEndDateFor(startingPoint, budgetType);
-            amortizeLen += (startingPoint < itemEndDate)? 1 : 0;
-        }
-        return amortizeLen;
     }
 
     function getBaseUnitForBudgetType(budgetType) {
@@ -246,7 +203,7 @@ var budgetPageUtil = (function($) {
 })(jQuery);
 
 $(document).ready(function () {
-    budgetPageUtil.initClickHandlers();
-    budgetPageUtil.initAddItemComponent();
+    budgetUtil.initClickHandlers();
+    budgetUtil.initAddItemComponent();
     $('#budget-list-all')[0].click();
 });
