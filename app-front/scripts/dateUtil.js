@@ -5,6 +5,21 @@ var dateUtil = (function () {
         YEARLY : 'yearly'
     };
 
+    var months = {
+        0: 'January',
+        1: 'February',
+        2: 'March',
+        3: 'April',
+        4: 'May',
+        5: 'June',
+        6: 'July',
+        7: 'August',
+        8: 'September',
+        9: 'October',
+        10: 'November',
+        11: 'December'
+    };
+
     function getStartDateFor(date, budgetType) {
         date = date ? date : new Date();
         if (budgetType == budgetTypes.WEEKLY) {
@@ -69,32 +84,8 @@ var dateUtil = (function () {
     }
 
     function getReadableMonth(date) {
-        var month = date.getMonth();
-        if (month == 0) {
-            return 'January';
-        } else if (month == 1) {
-            return 'February';
-        } else if (month == 2) {
-            return 'March';
-        } else if (month == 3) {
-            return 'April';
-        } else if (month == 4) {
-            return 'May';
-        } else if (month == 5) {
-            return 'June';
-        } else if (month == 6) {
-            return 'July';
-        } else if (month == 7) {
-            return 'August';
-        } else if (month == 8) {
-            return 'September';
-        } else if (month == 9) {
-            return 'October';
-        } else if (month == 10) {
-            return 'November';
-        } else {
-            return 'December';
-        }
+        var monthNum = date.getMonth();
+        return months[monthNum];
     }
 
     function getFullReadableDate(date) {
