@@ -1,5 +1,81 @@
 var budgetUtil = (function($) {
 
+    var budgetAccordionPanel = function() {
+        function budgetGetInfoHandler(e) {
+            var budgetId = $(e.target).attr('data-budget-id');
+            var budgetType = $(e.target).attr('data-budget-type');
+            var infoApiPath = '/budget/'+budgetId+'/info/';
+            $.get(infoApiPath).done(function (budgetInfo) {
+                updateBudgetItems(budgetInfo, budgetType);
+                addBudgetTotals(budgetInfo);
+                updateBudgetAccordionItemList(budgetId, budgetType, budgetInfo);
+                initAddItemModal(true, budgetId, budgetType);
+            }).fail(function () {
+                alert("Couldn't get budget info from: "+infoApiPath);
+            });
+        }
+
+        function updateBudgetItems(budgetInfo, budgetType) {
+            var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
+            budgetInfo.items = budgetInfo.items.map(function (item) {
+                item.formattedTotalCost = item.cost.toFixed(2);
+                item.amortizedCost = (item.cost / item.duration);
+                item.formattedAmortizedCost = item.amortizedCost.toFixed(2);
+                item.durationStr = item.duration + ' ' + baseUnitForBudgetType + '(s)';
+                // set some useful text about the items end date
+                var americanDateStr = dateUtil.convertISOtoAmericanStr(item.end_date);
+                var amortizeLenRemaining = dateUtil.getAmortizeLenRemainingFromToday(new Date(americanDateStr), budgetType);
+                if (amortizeLenRemaining == 1) {
+                    item.actionableEndDuration = 'ending this ' + baseUnitForBudgetType;
+                } else if (amortizeLenRemaining == 2) {
+                    item.actionableEndDuration = 'ends next ' + baseUnitForBudgetType;
+                } else {
+                    item.actionableEndDuration = amortizeLenRemaining + ' ' + baseUnitForBudgetType + '(s) remaining';
+                }
+                return item;
+            });
+            return budgetInfo;
+        }
+
+        function addBudgetTotals(budgetInfo) {
+            var currentExpenditure = budgetInfo.items.length? budgetInfo.items.reduce(function (prevItem, curItem) {
+                curItem.amortizedCost = prevItem.amortizedCost + curItem.amortizedCost;
+                return curItem;
+            }).amortizedCost : 0;
+            budgetInfo.totals = {
+                expenditure : currentExpenditure,
+                formattedExpenditure : currentExpenditure.toFixed(2),
+                remaining : budgetInfo.budgetAmount - currentExpenditure,
+                formattedRemaining : (budgetInfo.budgetAmount - currentExpenditure).toFixed(2)
+            };
+            return budgetInfo;
+        }
+
+        function updateBudgetAccordionItemList(budgetId, budgetType, budgetInfo) {
+            var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
+            var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
+            $budgetItemList.siblings('.panel-footer').html(
+                    'Total remaining this ' + baseUnitForBudgetType + ': <b>$' + budgetInfo.totals.formattedRemaining+ '</b>')
+                .attr('title', '$'+budgetInfo.budgetAmount.toFixed(2) + ' - $' + budgetInfo.totals.formattedExpenditure);
+
+            var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
+            $budgetItemList.empty().append($items);
+            $budgetItemList.parent().find('[data-toggle="tooltip"]').tooltip();
+        }
+
+        function getBaseUnitForBudgetType(budgetType) {
+            var baseUnit = budgetType.substr(0, budgetType.search('ly'));
+            return baseUnit? baseUnit : 'unknown';
+        }
+
+        return {
+            budgetGetInfoHandler : budgetGetInfoHandler
+        }
+    }();
+
+
+
+
     var _clickHandlers = {
         budgetCreate: function budgetCreate (e) {
             var $createBudgetModal = $('#modal-create-budget');
@@ -45,7 +121,7 @@ var budgetUtil = (function($) {
                       '#amortize-length, ' +
                       '#item-end-date').val('');
                     $('#modal-add-item').modal('hide');
-                    _clickHandlers.budgetGetInfo(e); // reload info for this budget item list
+                    budgetAccordionPanel.budgetGetInfoHandler(e); // reload info for this budget item list
                 }).fail(function (failInfoObj) {
                     alert('Could not add item!\n'+failInfoObj.responseText);
                 });
@@ -59,64 +135,12 @@ var budgetUtil = (function($) {
                 $budgets.hide().fadeIn('slow');
                 // attach click handlers to each of the "Get Info" budgets
                 $('.get-budget-info-btn').each(function () {
-                    $(this).click(_clickHandlers.budgetGetInfo);
+                    $(this).click(budgetAccordionPanel.budgetGetInfoHandler);
                 });
 
             }).fail(function () {
                 alert("Couldn't get budget list!");
             })
-        },
-        budgetGetInfo: function budgetGetInfo (e) {
-            var budgetId = $(e.target).attr('data-budget-id');
-            var infoApiPath = '/budget/'+budgetId+'/info/';
-            $.get(infoApiPath).done(function (budgetInfo) {
-                var budgetType = $(e.target).attr('data-budget-type');
-                var baseUnitForBudgetType = getBaseUnitForBudgetType(budgetType);
-                $('#modal-add-item').attr('data-budget-type', budgetType);
-                initAddItemComponent(true);
-                budgetInfo.items = budgetInfo.items.map(function (item) {
-                    item.formattedTotalCost = item.cost.toFixed(2);
-                    item.amortizedCost = (item.cost/item.duration);
-                    item.formattedAmortizedCost = item.amortizedCost.toFixed(2);
-                    item.durationStr = item.duration + ' ' + baseUnitForBudgetType + '(s)';
-                    // set some useful text about the items end date
-                    var americanDateStr = dateUtil.convertISOtoAmericanStr(item.end_date);
-                    var amortizeLenRemaining = dateUtil.getAmortizeLenRemainingFromToday(new Date(americanDateStr), budgetType);
-                    if (amortizeLenRemaining == 1) {
-                        item.actionableEndDuration = 'ending this ' + baseUnitForBudgetType;
-                    } else if (amortizeLenRemaining == 2) {
-                        item.actionableEndDuration = 'ends next ' + baseUnitForBudgetType;
-                    } else {
-                        item.actionableEndDuration = amortizeLenRemaining + ' ' + baseUnitForBudgetType + '(s) remaining';
-                    }
-                    return item;
-                });
-                var currentExpenditure = budgetInfo.items.reduce(function (prevItem, curItem) {
-                    curItem.amortizedCost = prevItem.amortizedCost + curItem.amortizedCost;
-                    return curItem;
-                }).amortizedCost;
-                budgetInfo.totals = {
-                    expenditure : currentExpenditure,
-                    formattedExpenditure : currentExpenditure.toFixed(2),
-                    remaining : budgetInfo.budgetAmount - currentExpenditure,
-                    formattedRemaining : (budgetInfo.budgetAmount - currentExpenditure).toFixed(2)
-                };
-                var $budgetItemList = $('.budgetItemList').filter('[data-budget-id=' + budgetId + ']');
-                $budgetItemList.siblings('.panel-footer').html(
-                    'Total remaining this ' + baseUnitForBudgetType + ': <b>$' + budgetInfo.totals.formattedRemaining+ '</b>')
-                    .attr('title', '$'+budgetInfo.budgetAmount.toFixed(2) + ' - $' + budgetInfo.totals.formattedExpenditure);
-
-                var $items = $(_compiledTemplate('listItemTemplate')(budgetInfo));
-                $budgetItemList.empty().append($items);
-                $items.hide().fadeIn('slow');
-                $budgetItemList.parent().find('[data-toggle="tooltip"]').tooltip();
-                $budgetItemList.find('.budget-add-item-show-btn').click(function () {
-                    $('#budget-add-item-btn').attr('data-budget-id', budgetId);
-                    $('#amortize-length').attr('data-budget-type', budgetType);
-                });
-            }).fail(function () {
-                alert("Couldn't get budget info from: "+infoApiPath);
-            });
         }
     };
 
@@ -159,7 +183,7 @@ var budgetUtil = (function($) {
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
     }
 
-    function initAddItemComponent(reset) {
+    function initAddItemModal(reset, budgetId, budgetType) {
         var $addItemModal = $('#modal-add-item');
         $('#item-start-date').datepicker('destroy').datepicker({
             minDate : reset? dateUtil.getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null,
@@ -170,6 +194,13 @@ var budgetUtil = (function($) {
         });
         $('#amortize-length').off('change').change(_changeHandlers.itemAmortizeLen);
         $('#budget-add-item-btn').off('click').click(_clickHandlers.budgetAddItem);
+
+        if (budgetId && budgetType) {
+            $addItemModal.attr('data-budget-type', budgetType);
+            $('#budget-add-item-btn').attr('data-budget-id', budgetId)
+                .attr('data-budget-type', budgetType);
+            $('#amortize-length').attr('data-budget-type', budgetType);
+        }
     }
 
     function getBaseUnitForBudgetType(budgetType) {
@@ -193,12 +224,12 @@ var budgetUtil = (function($) {
 
     return {
         initClickHandlers: initClickHandlers,
-        initAddItemComponent: initAddItemComponent
+        initAddItemModal: initAddItemModal
     }
 })(jQuery);
 
 $(document).ready(function () {
     budgetUtil.initClickHandlers();
-    budgetUtil.initAddItemComponent();
+    budgetUtil.initAddItemModal();
     $('#budget-list-all')[0].click();
 });
