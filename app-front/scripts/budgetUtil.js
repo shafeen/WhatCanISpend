@@ -9,7 +9,7 @@ var budgetUtil = (function($) {
                 updateBudgetItems(budgetInfo, budgetType);
                 addBudgetTotals(budgetInfo);
                 updateBudgetAccordionItemList(budgetId, budgetType, budgetInfo);
-                initAddItemModal(true, budgetId, budgetType);
+                addItemModal.initModal(true, budgetId, budgetType);
             }).fail(function () {
                 alert("Couldn't get budget info from: "+infoApiPath);
             });
@@ -73,10 +73,15 @@ var budgetUtil = (function($) {
         }
     }();
 
-    // TODO: use this instead of initAddItemModal(..) below
     var addItemModal = function () {
         function initModal(reset, budgetId, budgetType) {
             var $addItemModal = $('#modal-add-item');
+            if (budgetId && budgetType) {
+                $addItemModal.attr('data-budget-type', budgetType);
+                $('#budget-add-item-btn').attr('data-budget-id', budgetId)
+                    .attr('data-budget-type', budgetType);
+                $('#amortize-length').attr('data-budget-type', budgetType);
+            }
             $('#item-start-date').datepicker('destroy').datepicker({
                 minDate : reset? dateUtil.getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null,
                 maxDate : reset? dateUtil.getEndDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
@@ -86,13 +91,6 @@ var budgetUtil = (function($) {
             });
             $('#amortize-length').off('change').change(itemAmortizeLenChangeHandler);
             $('#budget-add-item-btn').off('click').click(budgetAddItemHandler);
-
-            if (budgetId && budgetType) {
-                $addItemModal.attr('data-budget-type', budgetType);
-                $('#budget-add-item-btn').attr('data-budget-id', budgetId)
-                    .attr('data-budget-type', budgetType);
-                $('#amortize-length').attr('data-budget-type', budgetType);
-            }
         }
 
         function itemStartDateChangeHandler(e) {
@@ -138,7 +136,6 @@ var budgetUtil = (function($) {
         }
 
         function itemAmortizeLenChangeHandler(e) {
-            console.log("using new additemmodal module"); // TODO: remove this
             var DEFAULT_AMORTIZE_LEN = 1;
             var amortizeLen = $(this).val();
             var startDate = $('#item-start-date').val();
@@ -170,7 +167,6 @@ var budgetUtil = (function($) {
         }
     }();
 
-
     var _clickHandlers = {
         budgetCreate: function budgetCreate (e) {
             var $createBudgetModal = $('#modal-create-budget');
@@ -186,41 +182,6 @@ var budgetUtil = (function($) {
             }).fail(function (failInfoObj) {
                 alert(failInfoObj.responseText);
             });
-        },
-        budgetAddItem: function budgetAddItem (e) {
-            var addItemParams =  {
-                budgetId : parseInt($(e.target).attr('data-budget-id')),
-                name : $('#item-name').val(),
-                cost : $('#item-amount').val(),
-                endDate : new Date($('#item-end-date').val()).getTime()/1000,
-                startDate : new Date($('#item-start-date').val()).getTime()/1000
-            };
-            if (!addItemParams.name) {
-                alert('Please enter a name for the item!');
-                $('#item-name').focus();
-            } else if (isNaN(addItemParams.cost) || Number(addItemParams.cost) <= 0) {
-                alert('Item cost must be a number and nonzero!');
-                $('#item-amount').focus();
-            } else if (isNaN(addItemParams.startDate)) {
-                alert('Please enter a valid start date!');
-                $('#item-start-date').val('').focus();
-            } else if (isNaN(addItemParams.endDate)) {
-                alert('Please enter a valid end date!');
-                $('#item-end-date').val('').focus();
-            } else {
-                $.post('/budget/addItem/', addItemParams).done(function () {
-                    alert('Added item to budget.');
-                    $('#item-name, ' +
-                      '#item-amount, ' +
-                      '#item-start-date, ' +
-                      '#amortize-length, ' +
-                      '#item-end-date').val('');
-                    $('#modal-add-item').modal('hide');
-                    budgetAccordionPanel.budgetGetInfoHandler(e); // reload info for this budget item list
-                }).fail(function (failInfoObj) {
-                    alert('Could not add item!\n'+failInfoObj.responseText);
-                });
-            }
         },
         budgetListAll: function budgetListAll (e) {
             $.get('/budget/all/').done(function (budgetList) {
@@ -239,63 +200,9 @@ var budgetUtil = (function($) {
         }
     };
 
-    var _changeHandlers = {
-        itemAmortizeLen: function itemAmortizeLen(e) {
-            var DEFAULT_AMORTIZE_LEN = 1;
-            var amortizeLen = $(this).val();
-            var startDate = $('#item-start-date').val();
-            if (!isNaN(amortizeLen) && Number(amortizeLen) > 0 && startDate) {
-                var budgetType = $(e.target).attr('data-budget-type');
-                amortizeLen = parseInt(Number(amortizeLen));
-                $(this).val(amortizeLen);
-                var endDate = new Date(startDate);
-                while (amortizeLen) {
-                    endDate = dateUtil.getEndDateFor(endDate, budgetType);
-                    endDate.setDate(endDate.getDate() + 1);
-                    amortizeLen--;
-                }
-                endDate.setDate(endDate.getDate() - 1);
-                $('#item-end-date').datepicker("setDate", endDate)
-            } else {
-                if (!startDate) {
-                    alert('You need to set a start date first!');
-                    $('#item-start-date').focus();
-                } else {
-                    alert('Invalid length entered, setting to default value!');
-                    $(this).val(DEFAULT_AMORTIZE_LEN).change();
-                }
-            }
-        },
-        itemStartDate: function itemStartDate(e) {
-            $('#item-end-date').datepicker('destroy').datepicker({
-                minDate: new Date($(this).val())
-            });
-        }
-    };
-
     function initClickHandlers() {
         $('#budget-create-btn').click(_clickHandlers.budgetCreate);
         $('#budget-list-all').click(_clickHandlers.budgetListAll);
-    }
-
-    function initAddItemModal(reset, budgetId, budgetType) {
-        var $addItemModal = $('#modal-add-item');
-        $('#item-start-date').datepicker('destroy').datepicker({
-            minDate : reset? dateUtil.getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null,
-            maxDate : reset? dateUtil.getEndDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
-        }).change(_changeHandlers.itemStartDate);
-        $('#item-end-date').datepicker('destroy').datepicker({
-            minDate : reset? dateUtil.getStartDateFor(new Date(), $addItemModal.attr('data-budget-type')) : null
-        });
-        $('#amortize-length').off('change').change(_changeHandlers.itemAmortizeLen);
-        $('#budget-add-item-btn').off('click').click(_clickHandlers.budgetAddItem);
-
-        if (budgetId && budgetType) {
-            $addItemModal.attr('data-budget-type', budgetType);
-            $('#budget-add-item-btn').attr('data-budget-id', budgetId)
-                .attr('data-budget-type', budgetType);
-            $('#amortize-length').attr('data-budget-type', budgetType);
-        }
     }
 
     var _compiledTemplate = function () {
@@ -314,7 +221,7 @@ var budgetUtil = (function($) {
 
     return {
         initClickHandlers: initClickHandlers,
-        initAddItemModal: initAddItemModal
+        initAddItemModal: addItemModal.initModal
     }
 })(jQuery);
 
