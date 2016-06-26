@@ -167,8 +167,13 @@ var budgetUtil = (function($) {
         }
     }();
 
-    var _clickHandlers = {
-        budgetCreate: function budgetCreate (e) {
+    var navBar = function () {
+        function initNavBar() {
+            $('#budget-create-btn').click(budgetCreateHandler);
+            $('#budget-list-all').click(budgetListAllHandler);
+        }
+
+        function budgetCreateHandler (e) {
             var $createBudgetModal = $('#modal-create-budget');
             var requestParams = {
                 name: $createBudgetModal.find('#budget-name').val(),
@@ -182,8 +187,9 @@ var budgetUtil = (function($) {
             }).fail(function (failInfoObj) {
                 alert(failInfoObj.responseText);
             });
-        },
-        budgetListAll: function budgetListAll (e) {
+        }
+
+        function budgetListAllHandler (e) {
             $.get('/budget/all/').done(function (budgetList) {
                 var $budgetList = $('#budgetList').empty();
                 var $budgets = $(_compiledTemplate('budgetListAccordionTemplate')({budgets: budgetList}));
@@ -193,17 +199,15 @@ var budgetUtil = (function($) {
                 $('.get-budget-info-btn').each(function () {
                     $(this).click(budgetAccordionPanel.budgetGetInfoHandler);
                 });
-
             }).fail(function () {
                 alert("Couldn't get budget list!");
             })
         }
-    };
 
-    function initClickHandlers() {
-        $('#budget-create-btn').click(_clickHandlers.budgetCreate);
-        $('#budget-list-all').click(_clickHandlers.budgetListAll);
-    }
+        return {
+            initNavBar : initNavBar
+        }
+    }();
 
     var _compiledTemplate = function () {
         var compiledTemplates = {};
@@ -216,17 +220,17 @@ var budgetUtil = (function($) {
             }
             return compiledTemplates[templateId];
         }
-        return getCompiledTemplate
+        return getCompiledTemplate;
     }();
 
     return {
-        initClickHandlers: initClickHandlers,
+        initNavBar: navBar.initNavBar,
         initAddItemModal: addItemModal.initModal
     }
 })(jQuery);
 
 $(document).ready(function () {
-    budgetUtil.initClickHandlers();
+    budgetUtil.initNavBar();
     budgetUtil.initAddItemModal();
     $('#budget-list-all')[0].click();
 });

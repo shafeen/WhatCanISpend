@@ -133,10 +133,16 @@
 
     <div class="row">
         <div class="col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8">
-            <div>
-                <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#modal-create-budget"><span class="glyphicon glyphicon-plus-sign small"></span> Create budget</button>
-                <button id="budget-list-all" class="btn btn-default">List all budgets <span class="glyphicon glyphicon-triangle-bottom small"></span></button>
-                <button id="budget-edit" class="btn btn-default">Edit a budget <span class="glyphicon glyphicon-edit small"></span></button>
+            <div class="btn-group btn-group-justified">
+                <div class="btn-group" role="group">
+                    <button id="budget-create-show-btn" class="btn btn-default" data-toggle="modal" data-target="#modal-create-budget"><span class="glyphicon glyphicon-plus-sign small"></span> Create budget</button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button id="budget-list-all" class="btn btn-default">List all budgets <span class="glyphicon glyphicon-triangle-bottom small"></span></button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button id="budget-edit" class="btn btn-default">Edit a budget <span class="glyphicon glyphicon-edit small"></span></button>
+                </div>
             </div>
             <div id="budgetList" class="panel-group" role="tablist" aria-multiselectable="true"></div>
         </div>
