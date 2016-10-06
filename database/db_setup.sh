@@ -2,10 +2,10 @@
 
 db_name=budget
 
-if [ -f budget.db ]
+if [ -f ${db_name}.db ]
 then
     echo 'sqlite database budget.db exists, removing file.'
-    rm -f budget.db
+    rm -f ${db_name}.db
 else
     echo 'no existing databases.'
 fi
