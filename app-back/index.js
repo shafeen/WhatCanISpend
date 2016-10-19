@@ -1,3 +1,4 @@
+var path = require('path');
 var util = require('./util');
 var dbUtil = require('./dbUtil');
 var express = require('express');
@@ -12,6 +13,10 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+// setting up pug as the view engine
+app.set('views', path.join(__dirname, '..', 'app-front', 'views'));
+app.set('view engine', 'pug');
+
 app.get('/', function (req, res) {
     res.sendFile('index.html', {root: '../app-front/'});
 });
@@ -25,7 +30,7 @@ app.get('/home/', function (req, res) {
 });
 
 app.get('/test/', function (req, res) {
-    res.sendFile('index.html', {root: '../app-front/'});
+    res.render('index');
 });
 
 
