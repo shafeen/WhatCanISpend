@@ -1,5 +1,4 @@
 var path = require('path');
-var util = require('./util');
 var dbUtil = require('./dbUtil');
 var express = require('express');
 var app = express();
