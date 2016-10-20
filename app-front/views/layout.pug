@@ -1,0 +1,17 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        title WhatCanISpend?!
+
+        script(defer, src="/lib/jquery.min.js")
+        link(rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css")
+        script(defer, src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js")
+        script(defer, src="/scripts/dateUtil.js")
+        script(defer, src="/scripts/budgetUtil.js")
+        script(defer, src="/lib/bootstrap.min.js")
+        link(rel="stylesheet", type="text/css", href="/lib/bootstrap.min.css")
+        link(rel="stylesheet", type="text/css", href="/lib/bootstrap-theme.min.css")
+        script(defer, src="/lib/handlebars.min.js")
+    body
+        block content
