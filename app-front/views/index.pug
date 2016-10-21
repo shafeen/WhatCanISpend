@@ -1,3 +1,16 @@
 extends layout.pug
 block content
-    p hello this is some plain body content
+    div.container
+        div.row
+            div.col-md-offset-1.col-md-10.col-lg-offset-2.col-lg-8
+                div.btn-group.btn-group-justified
+                    div.btn-group(role="group")
+                        button#budget-create-show-btn.btn.btn-default(data-toggle="modal" data-target="#modal-create-budget")
+                            span.glyphicon.glyphicon-plus-sign.small &nbsp;Create budget
+                    div.btn-group(role="group")
+                        button#budget-list-all.btn.btn-default List all budgets&nbsp;
+                            span.glyphicon.glyphicon-triangle-bottom.small
+                    div.btn-group(role="group")
+                        button#budget-edit.btn.btn-default Edit a budget&nbsp;
+                            span.glyphicon.glyphicon-edit.small
+                div#budgetList.panel-group(role="tablist" aria-multiselectable="true")

@@ -1,0 +1,27 @@
+div#modal-create-budget.modal.fade(tabindex="-1" role="dialog")
+    div.modal-dialog
+        div.modal-content
+            div.modal-header
+                button.close(type="button" data-dismiss="modal" aria-label="Close")
+                    span(aria-hidden="true") &times;
+                h4.modal-title Create new budget
+            div.modal-body
+                div.row.form-inline.form-horizontal
+                    div.row
+                        label.col-md-3.col-sm-3.control-label(for="budget-name") name
+                        div.col-md-9.col-sm-9
+                            input#budget-name.form-control(placeholder="enter name here" type="text")
+                    div.row
+                        label.col-md-3.col-sm-3.control-label(for="budget-type") amortized
+                        div.col-md-9.col-sm-9"
+                            select#budget-type.form-control
+                                option(value="weekly") weekly
+                                option(value="monthly") monthly
+                                option(value="yearly") yearly
+                    div.row
+                        label.col-md-3.col-sm-3.control-label(for="budget-amount") amount
+                        div.col-md-9.col-sm-9
+                            input#budget-amount.form-control(placeholder="Enter amount $" type="number" min="0")
+            div.modal-footer
+                button.btn.btn-default(type="button" data-dismiss="modal") Close
+                button#budget-create-btn.btn.btn-primary(type="button") Create
