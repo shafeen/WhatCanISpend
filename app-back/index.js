@@ -16,6 +16,21 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.join(__dirname, '..', 'app-front', 'views'));
 app.set('view engine', 'pug');
 
+// set up the db using seqelize
+var Sequelize = require('sequelize');
+let sequelize = new Sequelize({
+    dialect: 'sqlite',
+    pool: {
+        max: 5,
+        min: 0,
+        idle: 10000
+    },
+    logging: false,
+    storage: './db.sqlite3'
+});
+var dbSetup = require('./dbSetup')(sequelize);
+
+
 app.get('/', function (req, res) {
     res.sendFile('index.html', {root: '../app-front/'});
 });
