@@ -72,6 +72,7 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
                     resolve({
                         id: lastInsertedId,
                         name: itemName,
+                        description: itemName,
                         cost: itemCost
                     });
                 }).catch(function (errorObj) {

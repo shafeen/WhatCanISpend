@@ -4,10 +4,13 @@ chai.use(chaiHttp);
 var assert = chai.assert;
 var expect = chai.expect;
 
+let SERVER_ADDR = 'http://localhost:3000';
+
 describe('Testing the /budget/ api', function () {
+
     describe('/budget/all/', function () {
         it('should return an array of correct budget objects as JSON', function (done) {
-            chai.request('http://localhost:3000')
+            chai.request(SERVER_ADDR)
                 .get('/budget/all/')
                 .end(function (err, res) {
                     let budgetObjects = res.body;
@@ -24,8 +27,8 @@ describe('Testing the /budget/ api', function () {
     });
 
     describe('/budget/create/', function () {
-        it('should create and return a budget object as JSON', function (done) {
-            chai.request('http://localhost:3000')
+        it('should create and return a budget object in the JSON response', function (done) {
+            chai.request(SERVER_ADDR)
                 .post('/budget/create/')
                 .send({name: 'Test Budget', amount: 1250, type: 'yearly'})
                 .end(function (err, res) {
@@ -40,6 +43,42 @@ describe('Testing the /budget/ api', function () {
         });
     });
 
+    describe('/budget/additem/', function () {
+        it('should add item to budget id#1 then return the item object in the JSON response', function (done) {
+            chai.request(SERVER_ADDR)
+                .post('/budget/additem')
+                .send({
+                    budgetId: 1,
+                    name: 'test item: bananas',
+                    cost: 3.25,
+                    startDate: new Date().getTime()/1000,
+                    endDate: new Date().getTime()/1000
+                }).end(function (err, res) {
+                    let itemObj = res.body.item;
+                    expect(res.status).to.equal(201);
+                    expect(itemObj.id).to.be.a('number');
+                    expect(itemObj.description).to.equal('test item: bananas');
+                    expect(itemObj.cost).to.equal(3.25);
+                    done();
+                });
+        });
+    });
+
+    describe('/budget/1/info/', function () {
+        it('should return the info for budget id#1 as JSON', function (done) {
+            chai.request(SERVER_ADDR)
+                .get('/budget/1/info')
+                .end(function (err, res) {
+                    let budgetInfoObj = res.body;
+                    expect(res.status).to.equal(200);
+                    expect(budgetInfoObj.budgetAmount).to.be.a('number');
+                    expect(budgetInfoObj.budgetName).to.be.a('string');
+                    expect(budgetInfoObj.budgetType).to.be.oneOf(['weekly', 'monthly', 'yearly']);
+                    expect(budgetInfoObj.items).to.be.a('array');
+                    done();
+                });
+        });
+    });
 
 });
 
