@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "cd app-back && nodemon -e js,jade,html --watch . --watch ../app-front index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive"
   },
   "repository": {
     "type": "git",
