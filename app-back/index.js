@@ -27,8 +27,6 @@ let sequelize = new Sequelize({
     logging: false,
     storage: './db.sqlite3'
 });
-var dbSetup = require('./dbSetup')(sequelize);
-
 
 app.get('/', function (req, res) {
     res.sendFile('index.html', {root: '../app-front/'});
@@ -48,7 +46,8 @@ app.get('/test/', function (req, res) {
 
 
 // THE MAIN ROUTES FOR THE API
-app.use('/budget/', require('./routes/budgetApi_old'));
+app.use('/budget/', require('./routes/budgetApi')(sequelize));
+//app.use('/budget/', require('./routes/budgetApi_old'));
 
 // STATIC STUFF
 app.use('/lib/', express.static('../node_modules/bootstrap/dist/js/'));
