@@ -69,6 +69,31 @@ module.exports = function(sequelize) {
         });
     });
 
+    router.get('/all/', (req, res) => {
+        console.log('received api request: /budget/all/');
+
+        // TODO: extract these into a dbUtil.js file
+        let BudgetType = require('../database/models/BudgetType')(sequelize);
+        let Budget = require('../database/models/Budget')(sequelize);
+        Budget.belongsTo(BudgetType);
+
+
+        dbSetup(sequelize).then(() => {
+            Budget.findAll({
+                include: [{ model: BudgetType}]
+            }).then((budgets) => {
+                budgets = budgets.map((budget) => {
+                    return {
+                        id: budget.get('name'),
+                        name: budget.get('name'),
+                        amount: budget.get('amount'),
+                        type: budget.get('budget_type').name
+                    }
+                });
+                res.json(budgets);
+            })
+        });
+    });
 
 
     return router;
