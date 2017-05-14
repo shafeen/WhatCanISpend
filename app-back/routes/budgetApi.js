@@ -60,6 +60,21 @@ let reqParamValidators = {
             };
             next();
         }
+    },
+    budgetInfo: (req, res, next) => {
+        if(!isNaN(req.params.id)) {
+            req.infoParams = {
+                budgetId: req.params.id
+            };
+            next();
+        } else {
+            res.status(400).json({
+                message: 'check params and try again',
+                reason: {
+                    id: 'invalid'
+                }
+            });
+        }
     }
 };
 
@@ -85,6 +100,38 @@ function getBudgetDuration(startDate, endDate, budgetType) {
         duration = -1;
     }
     return duration;
+}
+
+function getStartDateFor(date, budgetType) {
+    date = date ? date : new Date();
+    if (budgetType == 'weekly') {
+        while (date.getDay() != 0) {
+            date.setDate(date.getDate()-1);
+        }
+    } else if (budgetType == 'monthly') {
+        date.setDate(1);
+    } else if (budgetType == 'yearly') {
+        date.setMonth(0);
+        date.setDate(1);
+    }
+    return date;
+}
+
+function getEndDateFor(date, budgetType) {
+    date = date ? date : new Date();
+    if (budgetType == 'weekly') {
+        while (date.getDay() != 6) {
+            date.setDate(date.getDate()+1);
+        }
+    } else if (budgetType == 'monthly') {
+        date.setMonth(date.getMonth()+1);
+        date.setDate(0);
+    } else if (budgetType == 'yearly') {
+        date.setYear(date.getFullYear()+1);
+        date.setMonth(0);
+        date.setDate(0);
+    }
+    return date;
 }
 
 module.exports = function(sequelize) {
@@ -176,6 +223,46 @@ module.exports = function(sequelize) {
                 }
             });
         });
+    });
+
+    router.get('/:id/info', reqParamValidators.budgetInfo, (req, res) => {
+        console.log('received api request: /budget/:id/info');
+        let db = null;
+        let budgetInfoObj = {};
+        dbSync.then((_db) => {
+            db = _db;
+            return db.Budget.findOne({
+                where: { id: req.infoParams.budgetId },
+                include: [{ model: db.BudgetType }]
+            });
+        }).then((budget) => {
+            budgetInfoObj.budgetName = budget.get('name');
+            budgetInfoObj.budgetType = budget.get('budget_type').name;
+            budgetInfoObj.budgetAmount = budget.get('amount');
+            return db.Item.findAll({
+                where: {
+                    budgetId: req.infoParams.budgetId,
+                    start_date : {
+                        $lte: getEndDateFor(new Date(), budget.get('budget_type').name)
+                    },
+                    end_date : {
+                        $gte: getStartDateFor(new Date(), budget.get('budget_type').name)
+                    }
+                }
+            });
+        }).then((items) => {
+            // TODO: we have to filter the items down to the items that matter at the moment (this week)
+            budgetInfoObj.items = items.map((item) => {
+                return {
+                    id: item.get('id'),
+                    description: item.get('description'),
+                    cost: item.get('cost'),
+                    duration: item.get('duration')
+                }
+            });
+            //console.log(JSON.stringify(budgetInfoObj.items));
+            res.json(budgetInfoObj);
+        })
     });
 
     return router;
