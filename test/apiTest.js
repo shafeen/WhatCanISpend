@@ -8,6 +8,23 @@ let SERVER_ADDR = 'http://localhost:3000';
 
 describe('Testing the /budget/ api', function () {
 
+    describe('/budget/create/', function () {
+        it('should create and return a budget object in the JSON response', function (done) {
+            chai.request(SERVER_ADDR)
+                .post('/budget/create/')
+                .send({name: 'Test Budget', amount: 1250, type: 'yearly'})
+                .end(function (err, res) {
+                    let creationResponse = res.body;
+                    let budget = creationResponse.budget;
+                    expect(res.status).to.equal(201);
+                    expect(budget.name).to.equal('Test Budget');
+                    expect(budget.amount).to.equal(1250);
+                    expect(budget.type).to.equal('yearly');
+                    done();
+                });
+        });
+    });
+
     describe('/budget/all/', function () {
         it('should return an array of correct budget objects as JSON', function (done) {
             chai.request(SERVER_ADDR)
@@ -21,23 +38,6 @@ describe('Testing the /budget/ api', function () {
                         expect(Object.keys(firstBudget)).to.have.lengthOf(4);
                         expect(firstBudget.type).to.be.oneOf(['weekly', 'monthly', 'yearly']);
                     }
-                    done();
-                });
-        });
-    });
-
-    describe('/budget/create/', function () {
-        it('should create and return a budget object in the JSON response', function (done) {
-            chai.request(SERVER_ADDR)
-                .post('/budget/create/')
-                .send({name: 'Test Budget', amount: 1250, type: 'yearly'})
-                .end(function (err, res) {
-                    let creationResponse = res.body;
-                    let budget = creationResponse.budget;
-                    expect(res.status).to.equal(201);
-                    expect(budget.name).to.equal('Test Budget');
-                    expect(budget.amount).to.equal(1250);
-                    expect(budget.type).to.equal('yearly');
                     done();
                 });
         });
