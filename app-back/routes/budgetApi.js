@@ -35,19 +35,18 @@ let reqParamValidators = {
 
 module.exports = function(sequelize) {
 
+    let dbSync = dbSetup(sequelize);
+
     // create a new budget and return the budget object
     router.post('/create/', reqParamValidators.create, (req, res) => {
         console.log('received api request: /budget/create/');
 
-        // TODO: extract these into a dbUtil.js file
-        let BudgetType = require('../database/models/BudgetType')(sequelize);
-        let Budget = require('../database/models/Budget')(sequelize);
-        Budget.belongsTo(BudgetType);
-
-        dbSetup(sequelize).then(() => {
-            return BudgetType.findOrCreate({where : {name: req.createParams.type}, defaults: {}});
+        let db = null;
+        dbSync.then((_db) => {
+            db = _db;
+            return db.BudgetType.findOrCreate({where : {name: req.createParams.type}, defaults: {}});
         }).spread((budgetType) => {
-            let budget = Budget.build({
+            let budget = db.Budget.build({
                 name : req.createParams.name,
                 amount : req.createParams.amount
             });
@@ -72,15 +71,9 @@ module.exports = function(sequelize) {
     router.get('/all/', (req, res) => {
         console.log('received api request: /budget/all/');
 
-        // TODO: extract these into a dbUtil.js file
-        let BudgetType = require('../database/models/BudgetType')(sequelize);
-        let Budget = require('../database/models/Budget')(sequelize);
-        Budget.belongsTo(BudgetType);
-
-
-        dbSetup(sequelize).then(() => {
-            Budget.findAll({
-                include: [{ model: BudgetType}]
+        dbSync.then((db) => {
+            db.Budget.findAll({
+                include: [{ model: db.BudgetType}]
             }).then((budgets) => {
                 budgets = budgets.map((budget) => {
                     return {

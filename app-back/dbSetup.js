@@ -11,5 +11,11 @@ module.exports = function (sequelize) {
 
     Budget.hasMany(Item);
 
-    return sequelize.sync();
+    return sequelize.sync().then(() => {
+        return {
+            BudgetType: BudgetType,
+            Budget: Budget,
+            Item: Item
+        }
+    });
 };
