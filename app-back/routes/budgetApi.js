@@ -179,7 +179,7 @@ module.exports = function(sequelize) {
         }).then((budgets) => {
             budgets = budgets.map((budget) => {
                 return {
-                    id: budget.get('name'),
+                    id: budget.get('id'),
                     name: budget.get('name'),
                     amount: budget.get('amount'),
                     type: budget.get('budget_type').name

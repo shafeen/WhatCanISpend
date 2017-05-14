@@ -36,6 +36,9 @@ describe('Testing the /budget/ api', function () {
                         expect(budgetObjects).to.be.a('array');
                         expect(firstBudget).to.be.a('object');
                         expect(Object.keys(firstBudget)).to.have.lengthOf(4);
+                        expect(firstBudget.id).to.be.a('number');
+                        expect(firstBudget.name).to.be.a('string');
+                        expect(firstBudget.amount).to.be.a('number');
                         expect(firstBudget.type).to.be.oneOf(['weekly', 'monthly', 'yearly']);
                     }
                     done();
