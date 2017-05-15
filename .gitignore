@@ -5,3 +5,4 @@ bower_components/
 
 # we don't want to push the database since we can just create it with db_setup.sh
 budget.db
+db.sqlite3
