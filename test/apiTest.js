@@ -1,8 +1,8 @@
-var chai = require('chai');
-var chaiHttp = require('chai-http');
+let chai = require('chai');
+let chaiHttp = require('chai-http');
 chai.use(chaiHttp);
-var assert = chai.assert;
-var expect = chai.expect;
+let assert = chai.assert;
+let expect = chai.expect;
 
 let SERVER_ADDR = 'http://localhost:3000';
 
@@ -73,11 +73,16 @@ describe('Testing the /budget/ api', function () {
                 .get('/budget/1/info')
                 .end(function (err, res) {
                     let budgetInfoObj = res.body;
+                    let items = budgetInfoObj.items;
                     expect(res.status).to.equal(200);
                     expect(budgetInfoObj.budgetAmount).to.be.a('number');
                     expect(budgetInfoObj.budgetName).to.be.a('string');
                     expect(budgetInfoObj.budgetType).to.be.oneOf(['weekly', 'monthly', 'yearly']);
-                    expect(budgetInfoObj.items).to.be.a('array');
+                    expect(items).to.be.an('array');
+                    if(items.length) {
+                        expect(items[0].start_date).to.be.a('string');
+                        expect(items[0].end_date).to.be.a('string');
+                    }
                     done();
                 });
         });
