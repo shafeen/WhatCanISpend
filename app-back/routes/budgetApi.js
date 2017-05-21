@@ -257,7 +257,9 @@ module.exports = function(sequelize) {
                     id: item.get('id'),
                     description: item.get('description'),
                     cost: item.get('cost'),
-                    duration: item.get('duration')
+                    duration: item.get('duration'),
+                    start_date: item.get('start_date'),
+                    end_date: item.get('end_date')
                 }
             });
             //console.log(JSON.stringify(budgetInfoObj.items));
