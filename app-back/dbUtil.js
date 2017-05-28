@@ -1,6 +1,6 @@
-var Promise = require('bluebird');
-var sqlite3 = require('sqlite3').verbose();
-var path = require('path');
+let Promise = require('bluebird');
+let sqlite3 = require('sqlite3').verbose();
+let path = require('path');
 
 function createBudget(name, amount, type) {
     return new Promise(function (resolve, reject) {
@@ -10,7 +10,7 @@ function createBudget(name, amount, type) {
                 reject({type: 'invalid budget type: ' + type});
                 return;
             }
-            var budgetTypeId = resultArray[0].id;
+            let budgetTypeId = resultArray[0].id;
             runInsertQuery("INSERT INTO budgets(type_id, name, amount) VALUES (?,?,?)", [budgetTypeId, name, amount])
             .then(function (lastInsertedId) {
                 resolve({
@@ -64,7 +64,7 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
                 "ON budget_types.id = budgets.type_id " +
                 "WHERE budgets.id = ?", [budgetId])
             .then(function (resultArray) {
-                var budgetTypeId = resultArray[0].id;
+                let budgetTypeId = resultArray[0].id;
                 runInsertQuery("INSERT INTO items(budget_id, description, cost, duration, start_date, end_date)" +
                     "VALUES (?, ?, ?, ?, DATE(?, 'unixepoch'), DATE(?, 'unixepoch'))",
                     [budgetId, itemName, itemCost, getBudgetDuration(startDate, endDate, budgetTypeId), startDate, endDate])
@@ -86,16 +86,16 @@ function budgetAddItem(budgetId, itemName, itemCost, endDate, startDate) {
 }
 
 function getBudgetDuration(startDate, endDate, budgetTypeId) {
-    var WEEKLY = 1, MONTHLY = 2, YEARLY = 3;
-    var duration = 1;
-    var start = new Date(0), end = new Date(0);
+    let WEEKLY = 1, MONTHLY = 2, YEARLY = 3;
+    let duration = 1;
+    let start = new Date(0), end = new Date(0);
     start.setUTCSeconds(startDate);
     end.setUTCSeconds(endDate);
     if (budgetTypeId == WEEKLY) {
         duration = parseInt((end - start) / (1000*60*60*24)/7) + 1;
     } else if (budgetTypeId == MONTHLY) {
         while (start.getTime() != end.getTime()) {
-            var startMonth = start.getMonth();
+            let startMonth = start.getMonth();
             start.setDate(start.getDate() + 1);
             if (startMonth != start.getMonth()) {
                 duration++;
@@ -116,8 +116,8 @@ function getBudgetInfo(budgetId) {
             "ON budget_types.id = budgets.type_id " +
             "WHERE budgets.id = ?", [budgetId])
         .then(function (resultArray) {
-            var budgetTypeName = resultArray[0].name;
-            var budgetAmount = resultArray[0].amount;
+            let budgetTypeName = resultArray[0].name;
+            let budgetAmount = resultArray[0].amount;
             getSelectQueryResults(
                 "SELECT budgets.name, items.id item_id, " +
                 "items.description, items.cost, " +
@@ -131,7 +131,7 @@ function getBudgetInfo(budgetId) {
                 "end_date >= DATE(?, 'unixepoch')",
                 [budgetId, getEndDateFor(new Date(), budgetTypeName), getStartDateFor(new Date(), budgetTypeName)])
             .then(function (itemObjsArray) {
-                var budgetInfoObj = {
+                let budgetInfoObj = {
                     budgetName: itemObjsArray.length? itemObjsArray[0].name : undefined,
                     budgetType: itemObjsArray.length? itemObjsArray[0].budget_type : undefined,
                     budgetAmount: budgetAmount,
@@ -185,8 +185,8 @@ function getEndDateFor(date, budgetType) {
 
 function getSelectQueryResults(query, params) {
     return new Promise(function (resolve, reject) {
-        var returnObj = [];
-        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+        let returnObj = [];
+        let budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
         budgetDb.serialize(function () {
             budgetDb.each(query, params,
                 function(err, row) {
@@ -207,7 +207,7 @@ function getSelectQueryResults(query, params) {
 
 function runInsertQuery(query, params) {
     return new Promise(function (resolve, reject) {
-        var budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
+        let budgetDb = new sqlite3.Database(path.join(__dirname, '..', 'database', 'budget.db'));
         budgetDb.serialize(function () {
             budgetDb.run("PRAGMA FOREIGN_KEYS = ON");
             budgetDb.run(query, params, function (err) {

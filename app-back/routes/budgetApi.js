@@ -6,9 +6,9 @@ const POSSIBLE_BUDGET_TYPES = { weekly: true, monthly: true, yearly: true };
 
 let reqParamValidators = {
     create: (req, res, next) => {
-        var budgetName = req.body.name;
-        var budgetAmt = !isNaN(req.body.amount)? Number(req.body.amount) : null;
-        var budgetType = req.body.type ? req.body.type : BUDGET_TYPE_DEFAULT;
+        let budgetName = req.body.name;
+        let budgetAmt = !isNaN(req.body.amount) ? Number(req.body.amount) : null;
+        let budgetType = req.body.type ? req.body.type : BUDGET_TYPE_DEFAULT;
         if (budgetName != undefined &&
             budgetAmt != null &&
             budgetAmt > 0 &&

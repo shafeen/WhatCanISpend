@@ -1,13 +1,13 @@
-var path = require('path');
-var express = require('express');
-var app = express();
+let path = require('path');
+let express = require('express');
+let app = express();
 
 // compress all requests being served
-var compression = require('compression');
+let compression = require('compression');
 app.use(compression());
 
 // using bodyparser for POST body parsing
-var bodyParser = require('body-parser');
+let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -16,7 +16,7 @@ app.set('views', path.join(__dirname, '..', 'app-front', 'views'));
 app.set('view engine', 'pug');
 
 // set up the db using seqelize
-var Sequelize = require('sequelize');
+let Sequelize = require('sequelize');
 let sequelize = new Sequelize({
     dialect: 'sqlite',
     pool: {
