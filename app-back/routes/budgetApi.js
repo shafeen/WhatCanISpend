@@ -79,16 +79,16 @@ let reqParamValidators = {
 };
 
 function getBudgetDuration(startDate, endDate, budgetType) {
-    var WEEKLY = 'weekly', MONTHLY = 'monthly', YEARLY = 'yearly';
-    var duration = 1;
-    var start = new Date(0), end = new Date(0);
+    let WEEKLY = 'weekly', MONTHLY = 'monthly', YEARLY = 'yearly';
+    let duration = 1;
+    let start = new Date(0), end = new Date(0);
     start.setUTCSeconds(startDate);
     end.setUTCSeconds(endDate);
     if (budgetType == WEEKLY) {
         duration = parseInt((end - start) / (1000*60*60*24)/7) + 1;
     } else if (budgetType == MONTHLY) {
         while (start.getTime() != end.getTime()) {
-            var startMonth = start.getMonth();
+            let startMonth = start.getMonth();
             start.setDate(start.getDate() + 1);
             if (startMonth != start.getMonth()) {
                 duration++;
