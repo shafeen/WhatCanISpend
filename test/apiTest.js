@@ -88,5 +88,11 @@ describe('Testing the /budget/ api', function () {
         });
     });
 
+    describe('budget/delete/:id', function () {
+        it('should be able to delete an existing budget', function () {
+            // TODO: complete stub function
+        });
+    });
+
 });
 

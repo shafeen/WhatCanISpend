@@ -34,7 +34,6 @@ app.get('/', function (req, res) {
 
 // THE MAIN ROUTES FOR THE API
 app.use('/budget/', require('./routes/budgetApi')(sequelize));
-//app.use('/budget/', require('./routes/budgetApi_old'));
 
 // STATIC STUFF
 app.use('/lib/', express.static('../node_modules/bootstrap/dist/js/'));
