@@ -32,19 +32,6 @@ app.get('/', function (req, res) {
     res.sendFile('index.html', {root: '../app-front/'});
 });
 
-app.get('/createBudget/', function (req, res) {
-    res.sendFile('createBudget.html', {root: '../app-front/'});
-});
-
-app.get('/home/', function (req, res) {
-    res.sendFile('home.html', {root: '../app-front/'});
-});
-
-app.get('/test/', function (req, res) {
-    res.render('index');
-});
-
-
 // THE MAIN ROUTES FOR THE API
 app.use('/budget/', require('./routes/budgetApi')(sequelize));
 //app.use('/budget/', require('./routes/budgetApi_old'));
