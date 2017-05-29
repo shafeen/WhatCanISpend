@@ -75,6 +75,18 @@ let reqParamValidators = {
                 }
             });
         }
+    },
+    budgetDelete: (req, res, next) => {
+        if (isNaN(req.params.id)) {
+            res.status(400).json({
+                message: 'check params and try again',
+                reason: {
+                    id: 'invalid'
+                }
+            })
+        } else {
+            next();
+        }
     }
 };
 
@@ -157,6 +169,7 @@ module.exports = function(sequelize) {
             res.status(201).json({
                 message: 'Successfully created budget: ' + budget.get('name'),
                 budget: {
+                    id: budget.get('id'),
                     name: budget.get('name'),
                     amount: budget.get('amount'),
                     type: req.createParams.type
@@ -265,6 +278,32 @@ module.exports = function(sequelize) {
             //console.log(JSON.stringify(budgetInfoObj.items));
             res.json(budgetInfoObj);
         })
+    });
+
+    router.delete('/:id', reqParamValidators.budgetDelete, (req, res) => {
+        let budgetId = req.params.id;
+        console.log('received delete request for budget id#%s', budgetId);
+        let db = null;
+        dbSync.then((_db) => {
+            db = _db;
+            return db.Budget.findOne({
+                where: { id: budgetId }
+            })
+        }).then((budget) => {
+            if (!budget) {
+                res.status(400).json({
+                    message: `No budget with id#${budgetId} exists!`
+                });
+            } else {
+                let budgetName = budget.get('name');
+                budget.destroy();
+                res.status(200).json({
+                    message: `deleted budget "${budgetName}" with id#${budgetId}`
+                });
+            }
+        }).catch((reason) => {
+            res.status(500).send('Server Error Encountered!');
+        });
     });
 
     return router;
